@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Avatar, IconButton } from '@material-ui/core';
 import {
+  FilterNone,
   SearchOutlined,
   AttachFile,
   MoreVert,
@@ -9,21 +10,50 @@ import {
 } from '@material-ui/icons';
 import ChatMessage from '../ChatMessage/ChatMessage';
 
+import { useStateValue } from '../../store/StateProvider';
+
+import firebase from 'firebase';
 import db from '../../firebase';
 
 import './Chat.css';
+
+interface Message {
+  content: string;
+  google_uid: string;
+  name: string;
+  timestamp: firebase.firestore.FieldValue;
+}
 
 interface Props {
   roomId: string;
 }
 
 const Chat: React.FC<Props> = ({ roomId }) => {
+  const [{ user }, dispatch] = useStateValue();
+
   const [roomName, setRoomName] = useState<
     string | firebase.firestore.DocumentData
   >('');
   const [input, setInput] = useState<string>('');
+  const [messages, setMessages] = useState<firebase.firestore.DocumentData[]>(
+    []
+  );
+
   const sendMessage = (e: React.FormEvent): void => {
     e.preventDefault();
+    if (!input) return;
+    const messageToSend: Message = {
+      content: input,
+      google_uid: user.uid,
+      name: user.displayName,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    db.collection('rooms')
+      .doc(roomId)
+      .collection('messages')
+      .add(messageToSend);
+
     setInput('');
   };
 
@@ -35,7 +65,28 @@ const Chat: React.FC<Props> = ({ roomId }) => {
       .onSnapshot((snapshot) => {
         setRoomName(snapshot?.data()?.name);
       });
+
+    db.collection('rooms')
+      .doc(roomId)
+      .collection('messages')
+      .orderBy('timestamp', 'asc')
+      .onSnapshot((snapshot) =>
+        setMessages(snapshot.docs.map((doc) => doc.data()))
+      );
   }, [roomId]);
+
+  const bottomRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
+
+  const copyLink = (): void => {
+    navigator.clipboard.writeText(`http://localhost:3000/invite/${roomId}`); // change when deployed
+    alert('Invite link copied!');
+  };
+
   return (
     <div className='chat'>
       <div className='chat__header'>
@@ -49,6 +100,9 @@ const Chat: React.FC<Props> = ({ roomId }) => {
           <IconButton>
             <SearchOutlined />
           </IconButton>
+          <IconButton onClick={copyLink}>
+            <FilterNone />
+          </IconButton>
           <IconButton>
             <AttachFile />
           </IconButton>
@@ -58,8 +112,13 @@ const Chat: React.FC<Props> = ({ roomId }) => {
         </div>
       </div>
       <div className='chat__body'>
-        <ChatMessage />
-        <ChatMessage reciever />
+        {messages.map((message: firebase.firestore.DocumentData) => (
+          <ChatMessage
+            message={message}
+            reciever={message.google_uid === user.uid}
+          />
+        ))}
+        <div className='chat__bottom' ref={bottomRef}></div>
       </div>
       <div className='chat__footer'>
         <InsertEmoticon />

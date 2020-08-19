@@ -13,7 +13,6 @@ interface Props {
 }
 
 const SidebarChat: React.FC<Props> = ({ addNewChat, room, id }) => {
-  const [seed, setSeed] = useState<string>('');
   const createChat = (): void => {
     const roomName = prompt('Please enter a name for the chat.');
     if (!roomName) return;
@@ -21,13 +20,10 @@ const SidebarChat: React.FC<Props> = ({ addNewChat, room, id }) => {
     db.collection('rooms').add({ name: roomName });
   };
 
-  useEffect(() => {
-    setSeed(`qusai${Math.floor(Math.random() * 3000)}`);
-  }, []);
   return !addNewChat ? (
     <Link to={`/rooms/${id}`}>
       <div className='sidebarChat'>
-        <Avatar src={`https://avatars.dicebear.com/api/human/${seed}.svg`} />
+        <Avatar />
         <div className='sidebarChat__info'>
           <h2>{room.name}</h2>
           <p>Last message...</p>

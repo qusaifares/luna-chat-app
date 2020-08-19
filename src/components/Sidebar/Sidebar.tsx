@@ -6,6 +6,7 @@ import SidebarChat from '../SidebarChat/SidebarChat';
 import { useStateValue } from '../../store/StateProvider';
 
 import db from '../../firebase';
+import firebase from 'firebase';
 
 import './Sidebar.css';
 interface Room {
@@ -17,24 +18,56 @@ interface Props {}
 const Sidebar: React.FC<Props> = (props) => {
   const [{ user }, dispatch] = useStateValue();
   const [rooms, setRooms] = useState<Room[]>([]);
+  const [roomIds, setRoomIds] = useState<string[]>([]);
 
   useEffect(() => {
     // Returns unsubscribe value
-    const unsubscribe = db.collection('rooms').onSnapshot((snapshot) => {
-      setRooms(
-        snapshot.docs.map((doc) => ({
-          id: doc.id,
-          data: doc.data()
-        }))
-      );
-    });
-    const test = () => {
-      console.log(rooms);
-    };
-    test();
+    const unsubscribe = db
+      .collection('users')
+      .where('google_uid', '==', user.uid)
+      .onSnapshot((snapshot) => {
+        // returns ids of rooms
+        setRoomIds(
+          snapshot.docs
+            .map((doc) => doc.data())[0]
+            ?.rooms.map(
+              (
+                room: firebase.firestore.QueryDocumentSnapshot<
+                  firebase.firestore.DocumentData
+                >
+              ) => room.id
+            )
+        );
+        console.log(roomIds);
+        // setRooms(
+        //   snapshot.docs.map((doc) => ({
+        //     id: doc.id,
+        //     data: doc.data()
+        //   }))
+        // );
+      });
+
     // Cleanup on dismount
     return unsubscribe;
   }, []);
+
+  useEffect(() => {
+    if (!roomIds.length) return;
+    console.log(roomIds);
+    const unsubscribe = db
+      .collection('rooms')
+      .where(firebase.firestore.FieldPath.documentId(), 'in', roomIds)
+      .onSnapshot((snapshot) => {
+        const tempRooms = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          data: doc.data()
+        }));
+        console.log(tempRooms);
+        setRooms(tempRooms);
+      });
+    return unsubscribe;
+  }, [roomIds]);
+
   return (
     <div className='sidebar'>
       <div className='sidebar__header'>
