@@ -16,28 +16,30 @@ interface Room {
 interface Props {}
 
 const Sidebar: React.FC<Props> = (props) => {
-  const [{ user }, dispatch] = useStateValue();
+  const [{ user, google_user }, dispatch] = useStateValue();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [roomIds, setRoomIds] = useState<string[]>([]);
 
   useEffect(() => {
     // Returns unsubscribe value
+    if (!google_user.uid) return;
+    console.log(google_user);
     const unsubscribe = db
       .collection('users')
-      .where('google_uid', '==', user.uid)
+      .doc(google_user.uid)
       .onSnapshot((snapshot) => {
         // returns ids of rooms
-        setRoomIds(
-          snapshot.docs
-            .map((doc) => doc.data())[0]
-            ?.rooms.map(
-              (
-                room: firebase.firestore.QueryDocumentSnapshot<
-                  firebase.firestore.DocumentData
-                >
-              ) => room.id
-            )
-        );
+        console.log(snapshot?.data());
+        const res = snapshot
+          ?.data()
+          ?.rooms?.map(
+            (
+              room: firebase.firestore.QueryDocumentSnapshot<
+                firebase.firestore.DocumentData
+              >
+            ) => room.id
+          );
+        if (res) setRoomIds(res);
         console.log(roomIds);
         // setRooms(
         //   snapshot.docs.map((doc) => ({

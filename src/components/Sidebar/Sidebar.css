@@ -30,6 +30,7 @@
   border: none;
   margin-left: 10px;
   outline: none;
+  min-width: 70%;
 }
 
 .sidebar__header {

@@ -1,13 +1,16 @@
 interface State {
   user: object | null;
+  google_user: object | null;
 }
 
-export const initialState = {
-  user: null
+export const initialState: State = {
+  user: null,
+  google_user: null
 };
 
 export const actionTypes = {
-  SET_USER: 'SET_USER'
+  SET_USER: 'SET_USER',
+  SET_GOOGLE_USER: 'SET_GOOGLE_USER'
 };
 
 interface Action {
@@ -22,6 +25,11 @@ const reducer = (state: any, action: Action) => {
       return {
         ...state,
         user: action.value
+      };
+    case actionTypes.SET_GOOGLE_USER:
+      return {
+        ...state,
+        google_user: action.value
       };
     default:
       return state;

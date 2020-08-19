@@ -21,6 +21,10 @@
   font-weight: 500;
 }
 
+.chat__headerInfo > p {
+  color: grey;
+}
+
 .chat__headerRight {
   display: flex;
   justify-content: space-between;

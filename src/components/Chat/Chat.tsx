@@ -29,7 +29,8 @@ interface Props {
 }
 
 const Chat: React.FC<Props> = ({ roomId }) => {
-  const [{ user }, dispatch] = useStateValue();
+  const [{ google_user }, dispatch] = useStateValue();
+  const [roomMemberNames, setRoomMemberNames] = useState<string[]>([]);
 
   const [roomName, setRoomName] = useState<
     string | firebase.firestore.DocumentData
@@ -44,8 +45,8 @@ const Chat: React.FC<Props> = ({ roomId }) => {
     if (!input) return;
     const messageToSend: Message = {
       content: input,
-      google_uid: user.uid,
-      name: user.displayName,
+      google_uid: google_user.uid,
+      name: google_user.displayName,
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     };
 
@@ -57,22 +58,54 @@ const Chat: React.FC<Props> = ({ roomId }) => {
     setInput('');
   };
 
+  const addRoomMembersFromSnapshot = (
+    snapshot: firebase.firestore.DocumentSnapshot<
+      firebase.firestore.DocumentData
+    >
+  ): void => {
+    let tempMembers: string[] = [];
+    snapshot
+      ?.data()
+      ?.members?.forEach(
+        (
+          member: firebase.firestore.DocumentData,
+          i: number,
+          arr: firebase.firestore.DocumentData[]
+        ) => {
+          member.get().then((memberData: firebase.firestore.DocumentData) => {
+            console.log(roomMemberNames);
+            tempMembers.push(memberData.data().name);
+            if (i + 1 === arr.length) setRoomMemberNames(tempMembers);
+          });
+        }
+      );
+  };
+
   useEffect(() => {
     if (!roomId) return;
 
-    db.collection('rooms')
+    const unsubscribe1 = db
+      .collection('rooms')
       .doc(roomId)
       .onSnapshot((snapshot) => {
         setRoomName(snapshot?.data()?.name);
+        addRoomMembersFromSnapshot(snapshot);
       });
 
-    db.collection('rooms')
+    const unsubscribe2 = db
+      .collection('rooms')
       .doc(roomId)
       .collection('messages')
       .orderBy('timestamp', 'asc')
       .onSnapshot((snapshot) =>
-        setMessages(snapshot.docs.map((doc) => doc.data()))
+        setMessages(
+          snapshot.docs.map((doc) => ({ id: doc.id, message: doc.data() }))
+        )
       );
+    return () => {
+      unsubscribe1();
+      unsubscribe2();
+    };
   }, [roomId]);
 
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -83,8 +116,10 @@ const Chat: React.FC<Props> = ({ roomId }) => {
   }, [messages]);
 
   const copyLink = (): void => {
-    navigator.clipboard.writeText(`http://localhost:3000/invite/${roomId}`); // change when deployed
-    alert('Invite link copied!');
+    navigator.clipboard
+      .writeText(`http://localhost:3000/invite/${roomId}`)
+      .then(() => alert('Invite link copied!'))
+      .catch((err) => console.log(err)); // change when deployed
   };
 
   return (
@@ -93,7 +128,11 @@ const Chat: React.FC<Props> = ({ roomId }) => {
         <Avatar />
         <div className='chat__headerInfo'>
           <h3>{roomName}</h3>
-          <p>Last seen at ...</p>
+          <p>
+            {roomMemberNames.join(', ').length < 40
+              ? roomMemberNames.join(', ')
+              : `${roomMemberNames.join(', ').substring(0, 40)}...`}
+          </p>
         </div>
 
         <div className='chat__headerRight'>
@@ -114,8 +153,9 @@ const Chat: React.FC<Props> = ({ roomId }) => {
       <div className='chat__body'>
         {messages.map((message: firebase.firestore.DocumentData) => (
           <ChatMessage
-            message={message}
-            reciever={message.google_uid === user.uid}
+            key={message.id}
+            message={message.message}
+            userMessage={message.message.google_uid === google_user?.uid}
           />
         ))}
         <div className='chat__bottom' ref={bottomRef}></div>

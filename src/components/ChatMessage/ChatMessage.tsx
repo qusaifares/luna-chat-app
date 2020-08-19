@@ -4,10 +4,10 @@ import './ChatMessage.css';
 
 interface Props {
   message: any;
-  reciever?: boolean;
+  userMessage?: boolean;
 }
 
-const ChatMessage: React.FC<Props> = ({ message, reciever }) => {
+const ChatMessage: React.FC<Props> = ({ message, userMessage }) => {
   const [isToday, setIsToday] = useState<boolean>(false);
   useEffect(() => {
     const today = new Date().toLocaleDateString();
@@ -18,8 +18,10 @@ const ChatMessage: React.FC<Props> = ({ message, reciever }) => {
     }
   });
   return (
-    <p className={`chatMessage ${reciever && 'chatMessage__reciever'}`}>
-      <span className='chatMessage__name'>{message.name}</span>
+    <p className={`chatMessage ${userMessage && 'chatMessage__userMessage'}`}>
+      {!userMessage && (
+        <span className='chatMessage__name'>{message.name}</span>
+      )}
       {message.content}
       <span className='chatMessage__timestamp'>
         {isToday

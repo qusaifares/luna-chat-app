@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Button } from '@material-ui/core';
 
-import { auth, provider } from '../../firebase';
+import db, { auth, provider } from '../../firebase';
 
 import { useStateValue } from '../../store/StateProvider';
 import { actionTypes } from '../../store/reducer';
@@ -11,15 +11,19 @@ import './Login.css';
 interface Props {}
 
 const Login: React.FC<Props> = (props) => {
-  const [{ user }, dispatch] = useStateValue();
+  const [{ google_user }, dispatch] = useStateValue();
 
   const signIn = (): void => {
     auth
       .signInWithPopup(provider)
       .then((result) => {
         dispatch({
-          type: actionTypes.SET_USER,
+          type: actionTypes.SET_GOOGLE_USER,
           value: result.user
+        });
+        dispatch({
+          type: actionTypes.SET_USER,
+          value: db.collection('users').doc(result?.user?.uid)
         });
       })
       .catch((err) => console.error(err.message));
