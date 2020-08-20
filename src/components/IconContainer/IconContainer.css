@@ -1,0 +1,37 @@
+.iconContainer {
+  position: relative;
+}
+
+.iconContainer__tooltip {
+  position: absolute;
+  z-index: 2;
+  width: max-content;
+  bottom: 0;
+  left: 50%;
+  background-color: black;
+  color: white;
+  padding: 5px;
+  border-radius: 5px;
+  font-size: 14px;
+  transform: translate(-50%, 120%);
+  opacity: 0;
+  cursor: default;
+  pointer-events: none;
+}
+
+.iconContainer__tooltip::before {
+  content: '';
+  height: 10px;
+  width: 10px;
+  position: absolute;
+  background-color: black;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.iconContainer:hover > .iconContainer__tooltip {
+  display: block;
+  opacity: 1;
+  transition: 100ms opacity ease-in;
+}

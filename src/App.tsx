@@ -19,7 +19,6 @@ const App = () => {
 
   useEffect(() => {
     auth.onAuthStateChanged((authUser) => {
-      console.log(authUser);
       dispatch({
         type: actionTypes.SET_GOOGLE_USER,
         value: authUser

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Avatar, IconButton } from '@material-ui/core';
 import {
   FilterNone,
@@ -9,6 +10,7 @@ import {
   Mic
 } from '@material-ui/icons';
 import ChatMessage from '../ChatMessage/ChatMessage';
+import IconContainer from '../IconContainer/IconContainer';
 
 import { useStateValue } from '../../store/StateProvider';
 
@@ -29,8 +31,11 @@ interface Props {
 }
 
 const Chat: React.FC<Props> = ({ roomId }) => {
+  let history = useHistory();
+
   const [{ google_user }, dispatch] = useStateValue();
   const [roomMemberNames, setRoomMemberNames] = useState<string[]>([]);
+  const [inviteTooltip, setInviteTooltip] = useState('Copy Invite Link');
 
   const [roomName, setRoomName] = useState<
     string | firebase.firestore.DocumentData
@@ -50,14 +55,23 @@ const Chat: React.FC<Props> = ({ roomId }) => {
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     };
 
-    db.collection('rooms')
+    const messagesRef = db
+      .collection('rooms')
       .doc(roomId)
-      .collection('messages')
-      .add(messageToSend);
+      .collection('messages');
 
+    messagesRef.add(messageToSend).then(() => {
+      messagesRef
+        .orderBy('timestamp', 'asc')
+        .get()
+        .then((msgs) =>
+          setMessages(
+            msgs.docs.map((msg) => ({ id: msg.id, message: msg.data() }))
+          )
+        );
+    });
     setInput('');
   };
-
   const addRoomMembersFromSnapshot = (
     snapshot: firebase.firestore.DocumentSnapshot<
       firebase.firestore.DocumentData
@@ -73,7 +87,6 @@ const Chat: React.FC<Props> = ({ roomId }) => {
           arr: firebase.firestore.DocumentData[]
         ) => {
           member.get().then((memberData: firebase.firestore.DocumentData) => {
-            console.log(roomMemberNames);
             tempMembers.push(memberData.data().name);
             if (i + 1 === arr.length) setRoomMemberNames(tempMembers);
           });
@@ -83,6 +96,16 @@ const Chat: React.FC<Props> = ({ roomId }) => {
 
   useEffect(() => {
     if (!roomId) return;
+
+    const roomRef = db
+      .collection('rooms')
+      .doc(roomId)
+      .get()
+      .then((roomDoc) => {
+        if (!roomDoc.exists) {
+          history.push('/');
+        }
+      });
 
     const unsubscribe1 = db
       .collection('rooms')
@@ -117,9 +140,14 @@ const Chat: React.FC<Props> = ({ roomId }) => {
 
   const copyLink = (): void => {
     navigator.clipboard
-      .writeText(`http://localhost:3000/invite/${roomId}`)
-      .then(() => alert('Invite link copied!'))
-      .catch((err) => console.log(err)); // change when deployed
+      .writeText(`${window.location.origin}/invite/${roomId}`)
+      .then(() => {
+        setInviteTooltip('Invite Link Copied!');
+        setTimeout(() => {
+          setInviteTooltip('Copy Invite Link');
+        }, 4000);
+      })
+      .catch((err) => console.log(err));
   };
 
   return (
@@ -136,15 +164,21 @@ const Chat: React.FC<Props> = ({ roomId }) => {
         </div>
 
         <div className='chat__headerRight'>
-          <IconButton>
-            <SearchOutlined />
-          </IconButton>
-          <IconButton onClick={copyLink}>
-            <FilterNone />
-          </IconButton>
-          <IconButton>
-            <AttachFile />
-          </IconButton>
+          <IconContainer tooltip='Search'>
+            <IconButton>
+              <SearchOutlined />
+            </IconButton>
+          </IconContainer>
+          <IconContainer tooltip={inviteTooltip}>
+            <IconButton onClick={copyLink}>
+              <FilterNone />
+            </IconButton>
+          </IconContainer>
+          <IconContainer tooltip='Attach File'>
+            <IconButton>
+              <AttachFile />
+            </IconButton>
+          </IconContainer>
           <IconButton>
             <MoreVert />
           </IconButton>

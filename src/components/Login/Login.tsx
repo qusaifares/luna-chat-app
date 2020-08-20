@@ -21,9 +21,33 @@ const Login: React.FC<Props> = (props) => {
           type: actionTypes.SET_GOOGLE_USER,
           value: result.user
         });
-        dispatch({
-          type: actionTypes.SET_USER,
-          value: db.collection('users').doc(result?.user?.uid)
+        const userRef = db.collection('users').doc(result?.user?.uid);
+        userRef.get().then((userDoc) => {
+          if (userDoc.exists) {
+            dispatch({
+              type: actionTypes.SET_USER,
+              value: userDoc.data()
+            });
+          } else {
+            userRef
+              .set({
+                email: google_user.email,
+                google_uid: google_user.uid,
+                name: google_user.displayName,
+                photoURL: google_user.photoURL,
+                rooms: []
+              })
+              .then(() =>
+                dispatch({
+                  email: google_user.email,
+                  google_uid: google_user.uid,
+                  name: google_user.displayName,
+                  photoURL: google_user.photoURL,
+                  rooms: []
+                })
+              )
+              .catch((err) => console.log(err));
+          }
         });
       })
       .catch((err) => console.error(err.message));

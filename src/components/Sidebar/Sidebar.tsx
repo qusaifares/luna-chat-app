@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Avatar, IconButton } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
+
+import { Avatar, IconButton, Menu, MenuItem } from '@material-ui/core';
 import { DonutLarge, Chat, MoreVert, SearchOutlined } from '@material-ui/icons';
 import SidebarChat from '../SidebarChat/SidebarChat';
 
 import { useStateValue } from '../../store/StateProvider';
+import { actionTypes } from '../../store/reducer';
 
-import db from '../../firebase';
+import db, { auth } from '../../firebase';
 import firebase from 'firebase';
 
 import './Sidebar.css';
@@ -16,20 +19,23 @@ interface Room {
 interface Props {}
 
 const Sidebar: React.FC<Props> = (props) => {
+  let history = useHistory();
   const [{ user, google_user }, dispatch] = useStateValue();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [roomIds, setRoomIds] = useState<string[]>([]);
+  const [optionsAnchor, setOptionsAnchor] = React.useState<null | HTMLElement>(
+    null
+  );
 
   useEffect(() => {
     // Returns unsubscribe value
     if (!google_user.uid) return;
-    console.log(google_user);
+
     const unsubscribe = db
       .collection('users')
       .doc(google_user.uid)
       .onSnapshot((snapshot) => {
         // returns ids of rooms
-        console.log(snapshot?.data());
         const res = snapshot
           ?.data()
           ?.rooms?.map(
@@ -40,22 +46,17 @@ const Sidebar: React.FC<Props> = (props) => {
             ) => room.id
           );
         if (res) setRoomIds(res);
-        console.log(roomIds);
-        // setRooms(
-        //   snapshot.docs.map((doc) => ({
-        //     id: doc.id,
-        //     data: doc.data()
-        //   }))
-        // );
       });
 
     // Cleanup on dismount
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
     if (!roomIds.length) return;
-    console.log(roomIds);
+
     const unsubscribe = db
       .collection('rooms')
       .where(firebase.firestore.FieldPath.documentId(), 'in', roomIds)
@@ -64,11 +65,21 @@ const Sidebar: React.FC<Props> = (props) => {
           id: doc.id,
           data: doc.data()
         }));
-        console.log(tempRooms);
+
         setRooms(tempRooms);
       });
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+    };
   }, [roomIds]);
+
+  const signOut = (): void => {
+    auth.signOut().then(() => {
+      dispatch({ type: actionTypes.SET_USER, value: null });
+      dispatch({ type: actionTypes.SET_GOOGLE_USER, value: null });
+      history.push('/');
+    });
+  };
 
   return (
     <div className='sidebar'>
@@ -81,9 +92,29 @@ const Sidebar: React.FC<Props> = (props) => {
           <IconButton>
             <Chat />
           </IconButton>
-          <IconButton>
+          <IconButton
+            onClick={(e) => setOptionsAnchor(e.currentTarget)}
+            aria-controls='sidebar__optionsMenu'
+          >
             <MoreVert />
           </IconButton>
+          <Menu
+            id='sidebar__optionsMenu'
+            open={!!optionsAnchor}
+            anchorEl={optionsAnchor}
+            getContentAnchorEl={null}
+            onClose={() => setOptionsAnchor(null)}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'center'
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'center'
+            }}
+          >
+            <MenuItem onClick={signOut}>Sign Out</MenuItem>
+          </Menu>
         </div>
       </div>
       <div className='sidebar__search'>

@@ -44,14 +44,20 @@ const SidebarChat: React.FC<Props> = ({ addNewChat, room, id }) => {
 
   useEffect(() => {
     if (!id) return;
-    db.collection('rooms')
+    const unsubscribe = db
+      .collection('rooms')
       .doc(id)
       .collection('messages')
       .orderBy('timestamp', 'desc')
-      .onSnapshot((snapshot) =>
-        setLastMessage(snapshot.docs.map((doc) => doc.data())[0])
-      );
-  });
+      .onSnapshot((snapshot) => {
+        let tempLastMsg = snapshot.docs.map((doc) => doc.data())[0];
+        tempLastMsg.name = tempLastMsg.name.split(' ')[0];
+        setLastMessage(tempLastMsg);
+      });
+    return () => {
+      unsubscribe();
+    };
+  }, [id]);
 
   return !addNewChat ? (
     <Link to={`/rooms/${id}`}>
@@ -61,7 +67,13 @@ const SidebarChat: React.FC<Props> = ({ addNewChat, room, id }) => {
           <h2>{room.name}</h2>
           <p>
             {lastMessage?.content &&
-              `${lastMessage?.name}: ${lastMessage?.content}`}
+              `${lastMessage?.name}: ${
+                lastMessage?.name?.length + lastMessage?.content?.length > 25
+                  ? lastMessage?.content
+                      .substring(0, 25 - lastMessage?.name?.length)
+                      .trim() + '...'
+                  : lastMessage.content
+              }`}
           </p>
         </div>
       </div>
