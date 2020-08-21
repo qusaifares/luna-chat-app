@@ -11,7 +11,7 @@ import './Login.css';
 interface Props {}
 
 const Login: React.FC<Props> = (props) => {
-  const [{ google_user }, dispatch] = useStateValue();
+  const [{ user, google_user }, dispatch] = useStateValue();
 
   const signIn = (): void => {
     auth
@@ -31,19 +31,22 @@ const Login: React.FC<Props> = (props) => {
           } else {
             userRef
               .set({
-                email: google_user.email,
-                google_uid: google_user.uid,
-                name: google_user.displayName,
-                photoURL: google_user.photoURL,
+                email: result?.user?.email,
+                google_uid: result?.user?.uid,
+                name: result?.user?.displayName,
+                photoURL: result?.user?.photoURL,
                 rooms: []
               })
               .then(() =>
                 dispatch({
-                  email: google_user.email,
-                  google_uid: google_user.uid,
-                  name: google_user.displayName,
-                  photoURL: google_user.photoURL,
-                  rooms: []
+                  type: actionTypes.SET_USER,
+                  value: {
+                    email: result?.user?.email,
+                    google_uid: result?.user?.uid,
+                    name: result?.user?.displayName,
+                    photoURL: result?.user?.photoURL,
+                    rooms: []
+                  }
                 })
               )
               .catch((err) => console.log(err));

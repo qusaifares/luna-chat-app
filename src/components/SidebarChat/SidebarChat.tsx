@@ -10,6 +10,8 @@ import { useStateValue } from '../../store/StateProvider';
 import db from '../../firebase';
 import firebase from 'firebase';
 
+import sidebarChatDate from './sidebarChatDate';
+
 interface Props {
   addNewChat?: boolean;
   room?: any;
@@ -19,9 +21,10 @@ interface Props {
 const SidebarChat: React.FC<Props> = ({ addNewChat, room, id }) => {
   let history = useHistory();
   const [{ user }, dispatch] = useStateValue();
-  const [lastMessage, setLastMessage] = useState<
-    firebase.firestore.DocumentData
-  >();
+  const [
+    lastMessage,
+    setLastMessage
+  ] = useState<firebase.firestore.DocumentData | null>();
 
   const createChat = (): void => {
     if (!user) return;
@@ -51,8 +54,15 @@ const SidebarChat: React.FC<Props> = ({ addNewChat, room, id }) => {
       .orderBy('timestamp', 'desc')
       .onSnapshot((snapshot) => {
         let tempLastMsg = snapshot.docs.map((doc) => doc.data())[0];
-        tempLastMsg.name = tempLastMsg.name.split(' ')[0];
-        setLastMessage(tempLastMsg);
+        if (tempLastMsg) {
+          tempLastMsg.name = tempLastMsg.name.split(' ')[0];
+          tempLastMsg.dateString = sidebarChatDate(
+            tempLastMsg?.timestamp?.toDate()
+          );
+          setLastMessage(tempLastMsg);
+        } else {
+          setLastMessage(null);
+        }
       });
     return () => {
       unsubscribe();
@@ -65,9 +75,12 @@ const SidebarChat: React.FC<Props> = ({ addNewChat, room, id }) => {
         <Avatar />
         <div className='sidebarChat__info'>
           <h2>{room.name}</h2>
+          <div className='sidebarChat__timestamp'>
+            {lastMessage?.dateString}
+          </div>
           <p>
             {lastMessage?.content &&
-              `${lastMessage?.name}: ${
+              `${!lastMessage?.messageType ? `${lastMessage?.name}: ` : ''}${
                 lastMessage?.name?.length + lastMessage?.content?.length > 25
                   ? lastMessage?.content
                       .substring(0, 25 - lastMessage?.name?.length)

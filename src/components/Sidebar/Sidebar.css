@@ -1,7 +1,10 @@
 .sidebar {
   flex: 0.35;
   display: flex;
+  min-width: 260px;
   flex-direction: column;
+  position: relative;
+  overflow-x: hidden;
 }
 
 .sidebar__search {
@@ -23,7 +26,7 @@
 
 .sidebar__searchContainer > .MuiSvgIcon-root {
   color: grey;
-  padding: 10px;
+  margin: 10px;
 }
 
 .sidebar__searchContainer > input {
@@ -56,4 +59,23 @@
   background: white;
   flex: 1;
   overflow-y: scroll;
+}
+
+.sidebar > .MuiDrawer-paper {
+  position: absolute !important;
+}
+
+.sidebar__drawerHeader {
+  padding-top: 45px;
+  padding-bottom: 5px;
+  background: #00bfa5;
+}
+
+.sidebar__drawerHeader * {
+  color: white !important;
+}
+
+.sidebar__drawerHeader > .MuiTypography-root {
+  margin-left: 20px;
+  font-size: 1.2rem;
 }

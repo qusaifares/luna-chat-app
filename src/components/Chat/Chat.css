@@ -33,6 +33,7 @@
 
 .chat__body {
   flex: 1;
+  width: 100%;
   background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
   background-position: center;
   background-size: cover;
@@ -47,6 +48,7 @@
   align-items: center;
   height: 62px;
   border-top: 1px solid lightgrey;
+  border-left: 1px solid lightgrey;
 }
 
 .chat__footer > form {
@@ -67,6 +69,8 @@
 }
 
 .chat__footer > .MuiSvgIcon-root {
-  padding: 10px;
   color: grey;
+  height: 45px;
+  width: 45px;
+  padding: 10px;
 }

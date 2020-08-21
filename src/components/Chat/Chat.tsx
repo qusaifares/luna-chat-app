@@ -10,7 +10,10 @@ import {
   Mic
 } from '@material-ui/icons';
 import ChatMessage from '../ChatMessage/ChatMessage';
+import SystemMessage from '../SystemMessage/SystemMessage';
 import IconContainer from '../IconContainer/IconContainer';
+
+import getDateMessage from '../SystemMessage/getDateMessage';
 
 import { useStateValue } from '../../store/StateProvider';
 
@@ -33,7 +36,7 @@ interface Props {
 const Chat: React.FC<Props> = ({ roomId }) => {
   let history = useHistory();
 
-  const [{ google_user }, dispatch] = useStateValue();
+  const [{ user, google_user }, dispatch] = useStateValue();
   const [roomMemberNames, setRoomMemberNames] = useState<string[]>([]);
   const [inviteTooltip, setInviteTooltip] = useState('Copy Invite Link');
 
@@ -185,17 +188,43 @@ const Chat: React.FC<Props> = ({ roomId }) => {
         </div>
       </div>
       <div className='chat__body'>
-        {messages.map((message: firebase.firestore.DocumentData) => (
-          <ChatMessage
-            key={message.id}
-            message={message.message}
-            userMessage={message.message.google_uid === google_user?.uid}
-          />
-        ))}
+        {messages.map((message: firebase.firestore.DocumentData, i, msgs) => {
+          if (
+            !i ||
+            getDateMessage(message.message.timestamp.toDate()) !==
+              getDateMessage(messages[i - 1].message.timestamp.toDate())
+          ) {
+            return (
+              <>
+                <SystemMessage
+                  dateObject={message?.message?.timestamp?.toDate()}
+                  messageType='date'
+                />
+                <ChatMessage
+                  key={message.id}
+                  messageType={message.message.messageType}
+                  message={message.message}
+                  userMessage={message.message.google_uid === user?.google_uid}
+                />
+              </>
+            );
+          } else {
+            return (
+              <ChatMessage
+                key={message.id}
+                messageType={message.message.messageType}
+                message={message.message}
+                userMessage={message.message.google_uid === google_user?.uid}
+              />
+            );
+          }
+        })}
         <div className='chat__bottom' ref={bottomRef}></div>
       </div>
       <div className='chat__footer'>
-        <InsertEmoticon />
+        <IconButton>
+          <InsertEmoticon />
+        </IconButton>
         <form onSubmit={sendMessage}>
           <input
             value={input}
@@ -205,7 +234,9 @@ const Chat: React.FC<Props> = ({ roomId }) => {
           />
           <button type='submit'>Send a message</button>
         </form>
-        <Mic />
+        <IconButton>
+          <Mic />
+        </IconButton>
       </div>
     </div>
   );

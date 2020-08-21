@@ -1,0 +1,8 @@
+.systemMessage {
+  font-size: 12px;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: rgb(208, 238, 247);
+  width: fit-content;
+  margin: 0 auto 30px auto;
+}

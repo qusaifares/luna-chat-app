@@ -11,9 +11,19 @@
 
 .sidebarChat__info {
   margin-left: 15px;
+  width: 100%;
+  position: relative;
 }
 
 .sidebarChat__info > h2 {
   font-size: 16px;
   margin-bottom: 8px;
+}
+
+.sidebarChat__timestamp {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 13px;
+  color: grey;
 }

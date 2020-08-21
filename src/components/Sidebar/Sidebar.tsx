@@ -1,9 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { Avatar, IconButton, Menu, MenuItem } from '@material-ui/core';
-import { DonutLarge, Chat, MoreVert, SearchOutlined } from '@material-ui/icons';
+import {
+  Avatar,
+  IconButton,
+  Menu,
+  MenuItem,
+  Drawer,
+  AppBar,
+  Toolbar,
+  Typography
+} from '@material-ui/core';
+import {
+  DonutLarge,
+  Chat,
+  MoreVert,
+  SearchOutlined,
+  ArrowBack
+} from '@material-ui/icons';
 import SidebarChat from '../SidebarChat/SidebarChat';
+import Profile from '../Profile/Profile';
 
 import { useStateValue } from '../../store/StateProvider';
 import { actionTypes } from '../../store/reducer';
@@ -18,7 +34,7 @@ interface Room {
 }
 interface Props {}
 
-const Sidebar: React.FC<Props> = (props) => {
+const Sidebar: React.FC<Props> = () => {
   let history = useHistory();
   const [{ user, google_user }, dispatch] = useStateValue();
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -26,6 +42,8 @@ const Sidebar: React.FC<Props> = (props) => {
   const [optionsAnchor, setOptionsAnchor] = React.useState<null | HTMLElement>(
     null
   );
+  const [searchInput, setSearchInput] = useState<string>('');
+  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
 
   useEffect(() => {
     // Returns unsubscribe value
@@ -52,7 +70,7 @@ const Sidebar: React.FC<Props> = (props) => {
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [google_user.uid]);
 
   useEffect(() => {
     if (!roomIds.length) return;
@@ -73,6 +91,11 @@ const Sidebar: React.FC<Props> = (props) => {
     };
   }, [roomIds]);
 
+  const toggleDrawer = (): void => {
+    setOptionsAnchor(null);
+    setDrawerOpen(!drawerOpen);
+  };
+
   const signOut = (): void => {
     auth.signOut().then(() => {
       dispatch({ type: actionTypes.SET_USER, value: null });
@@ -82,7 +105,7 @@ const Sidebar: React.FC<Props> = (props) => {
   };
 
   return (
-    <div className='sidebar'>
+    <div className='sidebar' id='sidebar'>
       <div className='sidebar__header'>
         <Avatar src={user?.photoURL} />
         <div className='sidebar__headerRight'>
@@ -113,6 +136,7 @@ const Sidebar: React.FC<Props> = (props) => {
               horizontal: 'center'
             }}
           >
+            <MenuItem onClick={toggleDrawer}>Profile</MenuItem>
             <MenuItem onClick={signOut}>Sign Out</MenuItem>
           </Menu>
         </div>
@@ -120,15 +144,50 @@ const Sidebar: React.FC<Props> = (props) => {
       <div className='sidebar__search'>
         <div className='sidebar__searchContainer'>
           <SearchOutlined />
-          <input type='text' placeholder='Search or start new chat' />
+          <input
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            type='text'
+            placeholder='Search or start new chat'
+          />
         </div>
       </div>
       <div className='sidebar__chats'>
         <SidebarChat addNewChat />
-        {rooms.map((room) => (
-          <SidebarChat key={room.id} room={room.data} id={room.id} />
-        ))}
+        {rooms
+          .filter((room) => room.data.name.includes(searchInput))
+          .map((room) => (
+            <SidebarChat key={room.id} room={room.data} id={room.id} />
+          ))}
       </div>
+      <Drawer
+        anchor='left'
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        PaperProps={{ style: { position: 'absolute', width: '100%' } }}
+        BackdropProps={{ invisible: true, style: { position: 'absolute' } }}
+        ModalProps={{
+          container: document.getElementById('sidebar'),
+          style: { position: 'absolute' }
+        }}
+      >
+        <Toolbar
+          className={`sidebar__drawerHeader ${
+            drawerOpen && 'sidebar__drawerHeader-open'
+          }`}
+        >
+          <IconButton
+            onClick={() => setDrawerOpen(false)}
+            edge='start'
+            color='inherit'
+            aria-label='back'
+          >
+            <ArrowBack />
+          </IconButton>
+          <Typography variant='h6'>Profile</Typography>
+        </Toolbar>
+        <Profile />
+      </Drawer>
     </div>
   );
 };
