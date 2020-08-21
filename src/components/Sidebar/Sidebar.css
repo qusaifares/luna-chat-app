@@ -43,6 +43,10 @@
   border-right: 1px solid lightgrey;
 }
 
+.sidebar__header > .MuiAvatar-root {
+  cursor: pointer;
+}
+
 .sidebar__headerRight {
   display: flex;
   align-items: center;

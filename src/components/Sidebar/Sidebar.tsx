@@ -48,7 +48,7 @@ const Sidebar: React.FC<Props> = () => {
     null
   );
   const [searchInput, setSearchInput] = useState<string>('');
-  const [drawerOpen, setDrawerOpen] = useState<boolean>(true);
+  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
   const [drawerTitle, setDrawerTitle] = useState<string>('');
 
   useEffect(() => {
