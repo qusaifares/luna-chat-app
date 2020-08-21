@@ -195,18 +195,17 @@ const Chat: React.FC<Props> = ({ roomId }) => {
               getDateMessage(messages[i - 1].message.timestamp.toDate())
           ) {
             return (
-              <>
+              <React.Fragment key={message.id}>
                 <SystemMessage
                   dateObject={message?.message?.timestamp?.toDate()}
                   messageType='date'
                 />
                 <ChatMessage
-                  key={message.id}
                   messageType={message.message.messageType}
                   message={message.message}
                   userMessage={message.message.google_uid === user?.google_uid}
                 />
-              </>
+              </React.Fragment>
             );
           } else {
             return (

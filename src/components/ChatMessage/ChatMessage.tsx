@@ -38,7 +38,7 @@ const ChatMessage: React.FC<Props> = ({
       {message.content}
       <span className='chatMessage__timestamp'>
         {message.timestamp?.toDate().toLocaleTimeString(navigator.language, {
-          hour: '2-digit',
+          hour: 'numeric',
           minute: '2-digit'
         })}
       </span>

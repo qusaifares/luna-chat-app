@@ -1,0 +1,28 @@
+.editField {
+  background: white;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+  padding: 15px 30px;
+}
+
+.editField__label {
+  font-size: 15px;
+  color: #009688;
+}
+
+.editField__lower {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.editField__value {
+  font-size: 17px;
+  flex: 1;
+  outline: none;
+}
+/* #919191 */
+
+.editField__lower > .MuiSvgIcon-root {
+  color: #919191 !important;
+}

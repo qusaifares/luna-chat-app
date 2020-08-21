@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 
 import { Avatar } from '@material-ui/core';
@@ -18,7 +18,9 @@ interface Props {
   id?: string;
 }
 
-const SidebarChat: React.FC<Props> = ({ addNewChat, room, id }) => {
+const SidebarChat: React.ForwardRefExoticComponent<
+  Props & React.RefAttributes<HTMLDivElement>
+> = forwardRef(({ addNewChat, room, id }, ref) => {
   let history = useHistory();
   const [{ user }, dispatch] = useStateValue();
   const [
@@ -71,7 +73,7 @@ const SidebarChat: React.FC<Props> = ({ addNewChat, room, id }) => {
 
   return !addNewChat ? (
     <Link to={`/rooms/${id}`}>
-      <div className='sidebarChat'>
+      <div ref={ref} className='sidebarChat'>
         <Avatar />
         <div className='sidebarChat__info'>
           <h2>{room.name}</h2>
@@ -96,6 +98,6 @@ const SidebarChat: React.FC<Props> = ({ addNewChat, room, id }) => {
       <h2>Add New Chat</h2>
     </div>
   );
-};
+});
 
 export default SidebarChat;

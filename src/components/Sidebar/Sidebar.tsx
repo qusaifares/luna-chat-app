@@ -1,5 +1,6 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
 import { useHistory } from 'react-router-dom';
+import FlipMove from 'react-flip-move';
 
 import {
   Avatar,
@@ -28,6 +29,9 @@ import db, { auth } from '../../firebase';
 import firebase from 'firebase';
 
 import './Sidebar.css';
+enum DrawerType {
+  Profile = 'Profile'
+}
 interface Room {
   id: string;
   data: firebase.firestore.DocumentData;
@@ -38,12 +42,22 @@ const Sidebar: React.FC<Props> = () => {
   let history = useHistory();
   const [{ user, google_user }, dispatch] = useStateValue();
   const [rooms, setRooms] = useState<Room[]>([]);
+  const [filteredRooms, setFilteredRooms] = useState<Room[]>([]);
   const [roomIds, setRoomIds] = useState<string[]>([]);
   const [optionsAnchor, setOptionsAnchor] = React.useState<null | HTMLElement>(
     null
   );
   const [searchInput, setSearchInput] = useState<string>('');
-  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+  const [drawerOpen, setDrawerOpen] = useState<boolean>(true);
+  const [drawerTitle, setDrawerTitle] = useState<string>('');
+
+  useEffect(() => {
+    setFilteredRooms(
+      rooms.filter((room) =>
+        room.data.name.toLowerCase().includes(searchInput.toLowerCase())
+      )
+    );
+  }, [rooms, searchInput]);
 
   useEffect(() => {
     // Returns unsubscribe value
@@ -91,9 +105,20 @@ const Sidebar: React.FC<Props> = () => {
     };
   }, [roomIds]);
 
-  const toggleDrawer = (): void => {
+  const toggleDrawer = (drawerName: DrawerType): void => {
     setOptionsAnchor(null);
-    setDrawerOpen(!drawerOpen);
+    if (!drawerName) {
+      setDrawerTitle('');
+      setDrawerOpen(false);
+    } else {
+      setDrawerTitle(drawerName);
+      setDrawerOpen(!drawerOpen);
+    }
+  };
+  const cleanupDrawer = (): void => {
+    if (!drawerOpen) {
+      setDrawerTitle('');
+    }
   };
 
   const signOut = (): void => {
@@ -107,7 +132,10 @@ const Sidebar: React.FC<Props> = () => {
   return (
     <div className='sidebar' id='sidebar'>
       <div className='sidebar__header'>
-        <Avatar src={user?.photoURL} />
+        <Avatar
+          onClick={() => toggleDrawer(DrawerType.Profile)}
+          src={user?.photoURL}
+        />
         <div className='sidebar__headerRight'>
           <IconButton>
             <DonutLarge />
@@ -136,7 +164,9 @@ const Sidebar: React.FC<Props> = () => {
               horizontal: 'center'
             }}
           >
-            <MenuItem onClick={toggleDrawer}>Profile</MenuItem>
+            <MenuItem onClick={() => toggleDrawer(DrawerType.Profile)}>
+              Profile
+            </MenuItem>
             <MenuItem onClick={signOut}>Sign Out</MenuItem>
           </Menu>
         </div>
@@ -154,11 +184,11 @@ const Sidebar: React.FC<Props> = () => {
       </div>
       <div className='sidebar__chats'>
         <SidebarChat addNewChat />
-        {rooms
-          .filter((room) => room.data.name.includes(searchInput))
-          .map((room) => (
+        <FlipMove>
+          {filteredRooms.map((room) => (
             <SidebarChat key={room.id} room={room.data} id={room.id} />
           ))}
+        </FlipMove>
       </div>
       <Drawer
         anchor='left'
@@ -170,6 +200,7 @@ const Sidebar: React.FC<Props> = () => {
           container: document.getElementById('sidebar'),
           style: { position: 'absolute' }
         }}
+        onTransitionEnd={cleanupDrawer}
       >
         <Toolbar
           className={`sidebar__drawerHeader ${
@@ -184,9 +215,9 @@ const Sidebar: React.FC<Props> = () => {
           >
             <ArrowBack />
           </IconButton>
-          <Typography variant='h6'>Profile</Typography>
+          <Typography variant='h6'>{drawerTitle}</Typography>
         </Toolbar>
-        <Profile />
+        {drawerTitle === DrawerType.Profile && <Profile />}
       </Drawer>
     </div>
   );
