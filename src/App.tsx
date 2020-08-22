@@ -23,7 +23,6 @@ const App = () => {
         type: actionTypes.SET_GOOGLE_USER,
         value: authUser
       });
-      dispatch({});
     });
   }, []);
 

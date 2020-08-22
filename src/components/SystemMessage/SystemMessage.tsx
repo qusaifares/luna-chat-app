@@ -22,12 +22,7 @@ const SystemMessage: React.FC<Props> = ({
   useEffect(() => {
     if (!dateObject && !message) return;
 
-    console.log('date', dateObject);
-    console.log('type', messageType);
-    console.log(message);
-
     if (messageType === 'date' && dateObject) {
-      console.log('hi');
       setMessageDisplayed(getDateMessage(dateObject));
     } else if (messageType === 'join' && message) {
       setMessageDisplayed(`${message.name} joined the group.`);

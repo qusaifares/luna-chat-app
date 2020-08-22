@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Avatar, IconButton } from '@material-ui/core';
+import { Avatar, IconButton, Drawer } from '@material-ui/core';
 import {
   FilterNone,
   SearchOutlined,
@@ -9,6 +9,9 @@ import {
   InsertEmoticon,
   Mic
 } from '@material-ui/icons';
+import 'emoji-mart/css/emoji-mart.css';
+import { Picker } from 'emoji-mart';
+
 import ChatMessage from '../ChatMessage/ChatMessage';
 import SystemMessage from '../SystemMessage/SystemMessage';
 import IconContainer from '../IconContainer/IconContainer';
@@ -47,6 +50,16 @@ const Chat: React.FC<Props> = ({ roomId }) => {
   const [messages, setMessages] = useState<firebase.firestore.DocumentData[]>(
     []
   );
+  const [emojisOpen, setEmojisOpen] = useState<boolean>(true);
+  const [drawerHeight, setDrawerHeight] = useState<number>(0);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setInput('');
+    setEmojisOpen(false);
+    inputRef.current?.focus();
+  }, [roomId]);
 
   const sendMessage = (e: React.FormEvent): void => {
     e.preventDefault();
@@ -139,7 +152,7 @@ const Chat: React.FC<Props> = ({ roomId }) => {
     if (bottomRef.current) {
       bottomRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [messages]);
+  }, [messages, emojisOpen]);
 
   const copyLink = (): void => {
     navigator.clipboard
@@ -152,6 +165,14 @@ const Chat: React.FC<Props> = ({ roomId }) => {
       })
       .catch((err) => console.log(err));
   };
+
+  useEffect(() => {
+    const emojisHeight = document.querySelector(
+      '.chat__emojiDrawer > .emoji-mart'
+    )?.clientHeight;
+    if (!emojisHeight) return;
+    if (drawerHeight !== emojisHeight) setDrawerHeight(emojisHeight);
+  }, [emojisOpen, drawerHeight]);
 
   return (
     <div className='chat'>
@@ -187,11 +208,14 @@ const Chat: React.FC<Props> = ({ roomId }) => {
           </IconButton>
         </div>
       </div>
-      <div className='chat__body'>
+      <div
+        id='chat__body'
+        className={`chat__body ${emojisOpen && 'chat__body-emojisOpen'}`}
+      >
         {messages.map((message: firebase.firestore.DocumentData, i, msgs) => {
           if (
             !i ||
-            getDateMessage(message.message.timestamp.toDate()) !==
+            getDateMessage(message?.message?.timestamp?.toDate()) !==
               getDateMessage(messages[i - 1].message.timestamp.toDate())
           ) {
             return (
@@ -220,12 +244,31 @@ const Chat: React.FC<Props> = ({ roomId }) => {
         })}
         <div className='chat__bottom' ref={bottomRef}></div>
       </div>
+
+      <div
+        className={`chat__emojiDrawer ${
+          !emojisOpen && 'chat__emojiDrawer-closed'
+        }`}
+        style={{ height: drawerHeight }}
+      >
+        <Picker
+          onSelect={(emoji) => {
+            if (emoji.native) {
+              setInput(input + emoji.native);
+            }
+          }}
+          emojiTooltip={true}
+          emojiSize={36}
+        />
+      </div>
+
       <div className='chat__footer'>
-        <IconButton>
+        <IconButton onClick={() => setEmojisOpen(!emojisOpen)}>
           <InsertEmoticon />
         </IconButton>
         <form onSubmit={sendMessage}>
           <input
+            ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             type='text'

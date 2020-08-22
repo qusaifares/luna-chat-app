@@ -18,7 +18,6 @@ const ChatMessage: React.FC<Props> = ({
   const [isToday, setIsToday] = useState<boolean>(false);
   useEffect(() => {
     const today = new Date().toLocaleDateString();
-    console.log(message.timestamp?.toDate().getDay());
     if (today === message.timestamp?.toDate().toLocaleDateString()) {
       setIsToday(true);
     } else {

@@ -1,3 +1,7 @@
+:root {
+  --chat__body__padding: 30px;
+}
+
 .chat {
   flex: 0.65;
   display: flex;
@@ -39,10 +43,15 @@
   background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
   background-position: center;
   background-size: cover;
-  padding: 30px;
+  padding: var(--chat__body__padding);
   padding-bottom: 0;
   overflow-y: scroll;
+  position: relative;
 }
+
+/* .chat__body-emojisOpen {
+  padding-bottom: 50%;
+} */
 
 .chat__footer {
   display: flex;
@@ -64,6 +73,7 @@
   padding: 10px;
   border: none;
   outline: none;
+  font-size: 16px;
 }
 
 .chat__footer > form > button {
@@ -75,4 +85,23 @@
   height: 45px;
   width: 45px;
   padding: 10px;
+}
+
+.chat__emojiDrawer {
+  width: 100%;
+  height: 0;
+  overflow: hidden;
+  transition: 0.2s height ease-in;
+}
+
+.chat__emojiDrawer-closed {
+  height: 0 !important;
+}
+
+.chat__emojiDrawer .emoji-mart {
+  width: 100% !important;
+}
+
+.chat__emojiDrawer .emoji-mart-preview {
+  display: none;
 }
