@@ -2,11 +2,14 @@
   display: flex;
   padding: 20px;
   cursor: pointer;
-  border-bottom: 1px solid #f6f6f6;
 }
 
 .sidebarChat:hover {
-  background-color: #ebebeb;
+  background-color: var(--dark-purple);
+}
+
+.sidebarChat-open > .sidebarChat {
+  background: var(--light-purple);
 }
 
 .sidebarChat__info {
@@ -18,6 +21,16 @@
 .sidebarChat__info > h2 {
   font-size: 16px;
   margin-bottom: 8px;
+  color: white;
+  font-weight: 600;
+}
+
+.sidebarChat__info-unread > h2 {
+  font-weight: 800;
+}
+
+.sidebarChat__info > p {
+  color: var(--sidebar-lastMsg);
 }
 
 .sidebarChat__timestamp {
@@ -25,5 +38,5 @@
   top: 0;
   right: 0;
   font-size: 13px;
-  color: grey;
+  color: var(--sidebar-lastMsg);
 }

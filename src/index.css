@@ -1,3 +1,14 @@
+:root {
+  --dark-purple: #35244e;
+  --purple: #402f58;
+  --light-purple: #4b3663;
+  --userMsg-bg: #6f45a1;
+  --recievedMsg-bg: #f6f6f6;
+  --badge-bg: #774aa6;
+  --sidebar-icons: #6d5c86;
+  --sidebar-lastMsg: #aa94cc;
+}
+
 * {
   margin: 0;
   padding: 0;

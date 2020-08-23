@@ -3,14 +3,15 @@
   font-size: 16px;
   padding: 10px;
   border-radius: 10px;
-  background-color: #fff;
+  background-color: var(--recievedMsg-bg);
   width: fit-content;
   margin-bottom: 30px;
 }
 
 .chatMessage__userMessage {
   margin-left: auto;
-  background-color: #dcf8cf;
+  background-color: var(--userMsg-bg);
+  color: white;
 }
 
 .chatMessage__name {

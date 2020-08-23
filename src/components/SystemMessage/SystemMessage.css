@@ -2,7 +2,8 @@
   font-size: 12px;
   padding: 10px;
   border-radius: 10px;
-  background-color: rgb(208, 238, 247);
+  background-color: #bca1e4;
+  color: white;
   width: fit-content;
   margin: 0 auto 30px auto;
 }

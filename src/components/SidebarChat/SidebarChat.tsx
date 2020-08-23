@@ -1,5 +1,5 @@
 import React, { useState, useEffect, forwardRef } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { NavLink, useHistory } from 'react-router-dom';
 
 import { Avatar } from '@material-ui/core';
 
@@ -72,7 +72,7 @@ const SidebarChat: React.ForwardRefExoticComponent<
   }, [id]);
 
   return !addNewChat ? (
-    <Link to={`/rooms/${id}`}>
+    <NavLink activeClassName='sidebarChat-open' to={`/rooms/${id}`}>
       <div ref={ref} className='sidebarChat'>
         <Avatar />
         <div className='sidebarChat__info'>
@@ -92,7 +92,7 @@ const SidebarChat: React.ForwardRefExoticComponent<
           </p>
         </div>
       </div>
-    </Link>
+    </NavLink>
   ) : (
     <div className='sidebarChat' onClick={createChat}>
       <h2>Add New Chat</h2>
