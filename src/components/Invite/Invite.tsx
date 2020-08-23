@@ -48,7 +48,7 @@ const Invite: React.FC<Props> = ({ roomId }) => {
                       // send system message
                       const messageToSend = {
                         messageType: 'join',
-                        content: `${user.name} joined the chat.`,
+                        content: `${user.name} joined the group.`,
                         google_uid: user.google_uid,
                         name: user.name,
                         timestamp: firebase.firestore.FieldValue.serverTimestamp()

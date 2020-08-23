@@ -177,7 +177,7 @@ const Sidebar: React.FC<Props> = () => {
 
   const createChat = (): void => {
     if (!user) return;
-    const roomName = prompt('Please enter a name for the chat.');
+    const roomName = prompt('Please enter a name for the chat.')?.trim();
     if (!roomName) return;
 
     const userRef = db.collection('users').doc(user.google_uid);

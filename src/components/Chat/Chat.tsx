@@ -64,9 +64,9 @@ const Chat: React.FC<Props> = ({ roomId }) => {
 
   const sendMessage = (e: React.FormEvent): void => {
     e.preventDefault();
-    if (!input) return;
+    if (!input.trim()) return;
     const messageToSend: Message = {
-      content: input,
+      content: input.trim(),
       google_uid: google_user.uid,
       name: google_user.displayName,
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
@@ -214,6 +214,20 @@ const Chat: React.FC<Props> = ({ roomId }) => {
         if (newRoomMembers.length) {
           roomRef
             .update({ members: newRoomMembers })
+            .then(() => {
+              const messageToSend = {
+                messageType: 'join',
+                content: `${user.name} left the group.`,
+                google_uid: user.google_uid,
+                name: user.name,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+              };
+              const messagesRef = db
+                .collection('rooms')
+                .doc(roomId)
+                .collection('messages');
+              messagesRef.add(messageToSend).catch((err) => console.log(err));
+            })
             .catch((err) => console.log(err));
         } else {
           // if no more users, delete room
@@ -283,7 +297,7 @@ const Chat: React.FC<Props> = ({ roomId }) => {
           if (
             !i ||
             getDateMessage(message?.message?.timestamp?.toDate()) !==
-              getDateMessage(messages[i - 1].message.timestamp.toDate())
+              getDateMessage(messages[i - 1]?.message?.timestamp?.toDate())
           ) {
             return (
               <React.Fragment key={message.id}>

@@ -9,6 +9,10 @@
   --sidebar-lastMsg: #aa94cc;
 }
 
+::-webkit-scrollbar {
+  display: none;
+}
+
 * {
   margin: 0;
   padding: 0;
