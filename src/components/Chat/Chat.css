@@ -91,7 +91,7 @@
   width: 100%;
   height: 0;
   overflow: hidden;
-  transition: 0.2s height ease-in;
+  transition: 0.2s height ease-out;
 }
 
 .chat__emojiDrawer-closed {

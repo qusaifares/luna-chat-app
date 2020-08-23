@@ -4,23 +4,35 @@ import FlipMove from 'react-flip-move';
 
 import {
   Avatar,
+  Badge,
   IconButton,
   Menu,
   MenuItem,
   Drawer,
   AppBar,
   Toolbar,
-  Typography
+  Typography,
+  ListItemIcon,
+  ListItemText
 } from '@material-ui/core';
 import {
   DonutLarge,
   Chat,
   MoreVert,
   SearchOutlined,
-  ArrowBack
+  ArrowBack,
+  FiberManualRecord
 } from '@material-ui/icons';
+
+import {
+  Theme,
+  makeStyles,
+  withStyles,
+  createStyles
+} from '@material-ui/core/styles';
 import SidebarChat from '../SidebarChat/SidebarChat';
 import Profile from '../Profile/Profile';
+import IconContainer from '../IconContainer/IconContainer';
 
 import { useStateValue } from '../../store/StateProvider';
 import { actionTypes } from '../../store/reducer';
@@ -32,11 +44,37 @@ import './Sidebar.css';
 enum DrawerType {
   Profile = 'Profile'
 }
+enum Status {
+  Online = 'online',
+  Away = 'away',
+  Offline = 'offline'
+}
 interface Room {
   id: string;
   data: firebase.firestore.DocumentData;
 }
 interface Props {}
+
+const StyledBadge = withStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      height: 'fit-content',
+      width: 'fit-content'
+    },
+    badge: {
+      boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+      '&::after': {
+        position: 'absolute',
+        top: -1,
+        left: -1,
+        width: '100%',
+        height: '100%',
+        borderRadius: '50%',
+        content: '""'
+      }
+    }
+  })
+)(Badge);
 
 const Sidebar: React.FC<Props> = () => {
   let history = useHistory();
@@ -47,9 +85,13 @@ const Sidebar: React.FC<Props> = () => {
   const [optionsAnchor, setOptionsAnchor] = React.useState<null | HTMLElement>(
     null
   );
+  const [statusAnchor, setStatusAnchor] = React.useState<null | HTMLElement>(
+    null
+  );
   const [searchInput, setSearchInput] = useState<string>('');
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
   const [drawerTitle, setDrawerTitle] = useState<string>('');
+  const [status, setStatus] = useState<Status>(Status.Online);
 
   useEffect(() => {
     setFilteredRooms(
@@ -98,7 +140,11 @@ const Sidebar: React.FC<Props> = () => {
           data: doc.data()
         }));
 
-        setRooms(tempRooms);
+        setRooms(
+          tempRooms.sort(
+            (a, b) => b.data.lastMessageTimestamp - a.data.lastMessageTimestamp
+          )
+        );
       });
     return () => {
       unsubscribe();
@@ -129,20 +175,93 @@ const Sidebar: React.FC<Props> = () => {
     });
   };
 
+  const createChat = (): void => {
+    if (!user) return;
+    const roomName = prompt('Please enter a name for the chat.');
+    if (!roomName) return;
+
+    const userRef = db.collection('users').doc(user.google_uid);
+
+    db.collection('rooms')
+      .add({
+        name: roomName,
+        members: [userRef],
+        lastMessageTimestamp: firebase.firestore.FieldValue.serverTimestamp()
+      })
+      .then((roomRef) => {
+        userRef
+          .update({
+            rooms: firebase.firestore.FieldValue.arrayUnion(roomRef)
+          })
+          .then(() => history.push(`/rooms/${roomRef.id}`))
+          .catch((err) => console.log(err));
+      });
+  };
+
+  const changeStatus = (statusClicked: Status) => {
+    setStatusAnchor(null);
+    setStatus(statusClicked);
+  };
+
   return (
     <div className='sidebar' id='sidebar'>
       <div className='sidebar__header'>
-        <Avatar
-          onClick={() => toggleDrawer(DrawerType.Profile)}
-          src={user?.photoURL}
-        />
+        <StyledBadge
+          overlap='circle'
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right'
+          }}
+          variant='dot'
+          className={`${status}Background ${
+            status === Status.Online && 'sidebar__avatarBadgeRipple'
+          }`}
+        >
+          <Avatar
+            onClick={(e) => setStatusAnchor(e.currentTarget)}
+            src={user?.photoURL}
+          />
+        </StyledBadge>
+        <Menu
+          id='sidebar__statusMenu'
+          open={!!statusAnchor}
+          anchorEl={statusAnchor}
+          getContentAnchorEl={null}
+          onClose={() => setStatusAnchor(null)}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center'
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left'
+          }}
+        >
+          <MenuItem onClick={() => changeStatus(Status.Online)}>
+            <ListItemIcon>
+              <FiberManualRecord fontSize='small' className='onlineColor' />
+            </ListItemIcon>
+            <ListItemText>Online</ListItemText>
+          </MenuItem>
+          <MenuItem onClick={() => changeStatus(Status.Away)}>
+            <ListItemIcon>
+              <FiberManualRecord fontSize='small' className='awayColor' />
+            </ListItemIcon>
+            <ListItemText>Away</ListItemText>
+          </MenuItem>
+          <MenuItem onClick={() => changeStatus(Status.Offline)}>
+            <ListItemIcon>
+              <FiberManualRecord fontSize='small' className='offlineColor' />
+            </ListItemIcon>
+            <ListItemText>Invisible</ListItemText>
+          </MenuItem>
+        </Menu>
         <div className='sidebar__headerRight'>
-          <IconButton>
-            <DonutLarge />
-          </IconButton>
-          <IconButton>
-            <Chat />
-          </IconButton>
+          <IconContainer tooltip='Create Group Chat'>
+            <IconButton onClick={createChat}>
+              <Chat />
+            </IconButton>
+          </IconContainer>
           <IconButton
             onClick={(e) => setOptionsAnchor(e.currentTarget)}
             aria-controls='sidebar__optionsMenu'
@@ -161,7 +280,7 @@ const Sidebar: React.FC<Props> = () => {
             }}
             transformOrigin={{
               vertical: 'top',
-              horizontal: 'center'
+              horizontal: 'right'
             }}
           >
             <MenuItem onClick={() => toggleDrawer(DrawerType.Profile)}>
@@ -183,7 +302,7 @@ const Sidebar: React.FC<Props> = () => {
         </div>
       </div>
       <div className='sidebar__chats'>
-        <SidebarChat addNewChat />
+        {/* <SidebarChat addNewChat /> */}
         <FlipMove>
           {filteredRooms.map((room) => (
             <SidebarChat key={room.id} room={room.data} id={room.id} />

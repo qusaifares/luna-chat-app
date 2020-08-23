@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Button } from '@material-ui/core';
+import { Button, SvgIcon } from '@material-ui/core';
 
 import db, { auth, provider } from '../../firebase';
 
@@ -7,6 +7,8 @@ import { useStateValue } from '../../store/StateProvider';
 import { actionTypes } from '../../store/reducer';
 
 import './Login.css';
+
+import GoogleLogo from './GoogleLogo';
 
 interface Props {}
 
@@ -67,7 +69,16 @@ const Login: React.FC<Props> = (props) => {
         <div className='login__text'>
           <h1>Sign in to WhatsApp</h1>
         </div>
-        <Button onClick={signIn}>Sign In With Google</Button>
+        <Button
+          onClick={signIn}
+          startIcon={
+            <SvgIcon>
+              <GoogleLogo />
+            </SvgIcon>
+          }
+        >
+          <p>Sign In With Google</p>
+        </Button>
       </div>
     </div>
   );

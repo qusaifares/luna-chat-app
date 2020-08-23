@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Avatar, IconButton, Drawer } from '@material-ui/core';
+import { Avatar, IconButton, Menu, MenuItem } from '@material-ui/core';
 import {
   FilterNone,
   SearchOutlined,
@@ -54,6 +54,7 @@ const Chat: React.FC<Props> = ({ roomId }) => {
   const [drawerHeight, setDrawerHeight] = useState<number>(0);
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const [optionsAnchor, setOptionsAnchor] = useState<null | HTMLElement>(null);
 
   useEffect(() => {
     setInput('');
@@ -174,6 +175,55 @@ const Chat: React.FC<Props> = ({ roomId }) => {
     if (drawerHeight !== emojisHeight) setDrawerHeight(emojisHeight);
   }, [emojisOpen, drawerHeight]);
 
+  const recordAudio = (): void => {};
+
+  const leaveGroup = (): void => {
+    const userRef = db.collection('users').doc(user.google_uid);
+    const roomRef = db.collection('rooms').doc(roomId);
+
+    userRef
+      .get()
+      .then((userDoc) => {
+        let newUserRooms = userDoc
+          ?.data()
+          ?.rooms.filter(
+            (
+              room: firebase.firestore.DocumentReference<
+                firebase.firestore.DocumentData
+              >
+            ) => room.id !== roomId
+          );
+        userRef
+          .update({ rooms: newUserRooms })
+          .catch((err) => console.log(err));
+      })
+      .catch((err) => console.log(err));
+
+    roomRef
+      .get()
+      .then((roomDoc) => {
+        let newRoomMembers = roomDoc
+          ?.data()
+          ?.members.filter(
+            (
+              member: firebase.firestore.DocumentReference<
+                firebase.firestore.DocumentData
+              >
+            ) => member.id !== user.google_uid
+          );
+        if (newRoomMembers.length) {
+          roomRef
+            .update({ members: newRoomMembers })
+            .catch((err) => console.log(err));
+        } else {
+          // if no more users, delete room
+          roomRef.delete().catch((err) => console.log(err));
+        }
+      })
+      .catch((err) => console.log(err));
+    history.push('/');
+  };
+
   return (
     <div className='chat'>
       <div className='chat__header'>
@@ -203,9 +253,26 @@ const Chat: React.FC<Props> = ({ roomId }) => {
               <AttachFile />
             </IconButton>
           </IconContainer>
-          <IconButton>
+          <IconButton onClick={(e) => setOptionsAnchor(e.currentTarget)}>
             <MoreVert />
           </IconButton>
+          <Menu
+            id='chat__optionsMenu'
+            open={!!optionsAnchor}
+            anchorEl={optionsAnchor}
+            getContentAnchorEl={null}
+            onClose={() => setOptionsAnchor(null)}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left'
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'left'
+            }}
+          >
+            <MenuItem onClick={leaveGroup}>Leave Group</MenuItem>
+          </Menu>
         </div>
       </div>
       <div
@@ -276,7 +343,7 @@ const Chat: React.FC<Props> = ({ roomId }) => {
           />
           <button type='submit'>Send a message</button>
         </form>
-        <IconButton>
+        <IconButton onClick={recordAudio}>
           <Mic />
         </IconButton>
       </div>

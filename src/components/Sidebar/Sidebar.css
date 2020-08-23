@@ -43,8 +43,48 @@
   border-right: 1px solid lightgrey;
 }
 
-.sidebar__header > .MuiAvatar-root {
+.sidebar__header .MuiAvatar-root {
   cursor: pointer;
+}
+
+.onlineColor {
+  color: #44b700;
+}
+
+.awayColor {
+  color: #f04848;
+}
+
+.offlineColor {
+  color: #727272;
+}
+
+.onlineBackground > .MuiBadge-badge {
+  background-color: #44b700;
+}
+
+.awayBackground > .MuiBadge-badge {
+  background-color: #f04848;
+}
+
+.offlineBackground > .MuiBadge-badge {
+  background-color: #727272;
+}
+
+.sidebar__avatarBadgeRipple > .MuiBadge-badge::after {
+  animation: ripple 1.2s infinite ease-in-out;
+  border: 1px solid #44b700;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
 }
 
 .sidebar__headerRight {
