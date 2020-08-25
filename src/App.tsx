@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Route, Switch, useHistory } from 'react-router-dom';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 
 import Home from './components/Home/Home';
 import SideNav from './components/SideNav/SideNav';
@@ -18,6 +19,12 @@ import SideNavItem from './components/SideNavItem/SideNavItem';
 const App = () => {
   let history = useHistory();
   const [{ user, google_user }, dispatch] = useStateValue();
+  const [darkMode, setDarkMode] = useState<boolean>(false);
+  const theme = createMuiTheme({
+    palette: {
+      type: darkMode ? 'dark' : 'light'
+    }
+  });
 
   useEffect(() => {
     auth.onAuthStateChanged((authUser) => {
@@ -61,35 +68,37 @@ const App = () => {
   }, [google_user]);
 
   return (
-    <div className='app'>
-      {user ? (
-        <>
-          <SideNav />
-          <div className='app__body'>
-            <Sidebar />
-            <Switch>
-              <Route
-                path='/rooms/:id'
-                exact
-                render={(routerProps) => (
-                  <Chat roomId={routerProps.match.params.id} />
-                )}
-              />
-              <Route
-                path='/invite/:id'
-                exact
-                render={(routerProps) => (
-                  <Invite roomId={routerProps.match.params.id} />
-                )}
-              />
-              <Route path='/' exact component={Home} />
-            </Switch>
-          </div>
-        </>
-      ) : (
-        <Login />
-      )}
-    </div>
+    <ThemeProvider theme={theme}>
+      <div className={`app ${darkMode && 'app-dark'}`}>
+        {user ? (
+          <>
+            <SideNav />
+            <div className='app__body'>
+              <Sidebar />
+              <Switch>
+                <Route
+                  path='/rooms/:id'
+                  exact
+                  render={(routerProps) => (
+                    <Chat roomId={routerProps.match.params.id} />
+                  )}
+                />
+                <Route
+                  path='/invite/:id'
+                  exact
+                  render={(routerProps) => (
+                    <Invite roomId={routerProps.match.params.id} />
+                  )}
+                />
+                <Route path='/' exact component={Home} />
+              </Switch>
+            </div>
+          </>
+        ) : (
+          <Login />
+        )}
+      </div>
+    </ThemeProvider>
   );
 };
 
