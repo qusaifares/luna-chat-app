@@ -2,6 +2,7 @@
   flex: 0.35;
   display: flex;
   min-width: 305px;
+  max-width: 485px;
   overflow-x: hidden;
 }
 

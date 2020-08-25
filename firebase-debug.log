@@ -1,0 +1,29 @@
+[debug] [2020-08-25T02:14:24.483Z] ----------------------------------------------------------------------
+[debug] [2020-08-25T02:14:24.485Z] Command:       /Users/qusaifares/.nvm/versions/node/v10.15.0/bin/node /Users/qusaifares/.nvm/versions/node/v10.15.0/bin/firebase deploy
+[debug] [2020-08-25T02:14:24.485Z] CLI Version:   8.9.0
+[debug] [2020-08-25T02:14:24.485Z] Platform:      darwin
+[debug] [2020-08-25T02:14:24.485Z] Node Version:  v10.15.0
+[debug] [2020-08-25T02:14:24.486Z] Time:          Mon Aug 24 2020 22:14:24 GMT-0400 (Eastern Daylight Time)
+[debug] [2020-08-25T02:14:24.486Z] ----------------------------------------------------------------------
+[debug] [2020-08-25T02:14:24.486Z] 
+[debug] [2020-08-25T02:14:24.504Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2020-08-25T02:14:24.505Z] > authorizing via signed-in user
+[debug] [2020-08-25T02:14:24.506Z] [iam] checking project whatsapp-clone-3d101 for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasedatabase.instances.update","firebasehosting.sites.update"]
+[debug] [2020-08-25T02:14:24.511Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2020-08-25T02:14:24.512Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2020-08-25T02:14:24.692Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=utf-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 25 Aug 2020 02:14:24 GMT","server":"scaffolding on HTTPServer2","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-25T02:14:24.708Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/whatsapp-clone-3d101:testIamPermissions  
+ {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasedatabase.instances.update","firebasehosting.sites.update"]}
+[debug] [2020-08-25T02:14:24.991Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 25 Aug 2020 02:14:24 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=155","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-25T02:14:24.993Z] >>> HTTP REQUEST POST https://iam.googleapis.com/v1/projects/whatsapp-clone-3d101/serviceAccounts/whatsapp-clone-3d101@appspot.gserviceaccount.com:testIamPermissions  
+ {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2020-08-25T02:14:25.224Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 25 Aug 2020 02:14:25 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-25T02:14:25.227Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/whatsapp-clone-3d101  
+ 
+[debug] [2020-08-25T02:14:25.653Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 25 Aug 2020 02:14:25 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[info] 
+[info] === Deploying to 'whatsapp-clone-3d101'...
+[info] 
+[info] i  deploying database, firestore, functions, hosting 
+[info] Running command: npm --prefix "$RESOURCE_DIR" run lint
