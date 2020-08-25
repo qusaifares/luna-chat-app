@@ -5,20 +5,23 @@ interface State {
   google_user: object | null;
   sideDrawer: DrawerType | null;
   drawerOpen: boolean;
+  darkMode: boolean;
 }
 
 export const initialState: State = {
   user: null,
   google_user: null,
   sideDrawer: null,
-  drawerOpen: false
+  drawerOpen: false,
+  darkMode: false
 };
 
 export const actionTypes = {
   SET_USER: 'SET_USER',
   SET_GOOGLE_USER: 'SET_GOOGLE_USER',
   SET_SIDE_DRAWER: 'SET_SIDE_DRAWER',
-  SET_DRAWER_OPEN: 'SET_DRAWER_OPEN'
+  SET_DRAWER_OPEN: 'SET_DRAWER_OPEN',
+  SET_DARK_MODE: 'SET_DARK_MODE'
 };
 
 interface Action {
@@ -48,6 +51,11 @@ const reducer = (state: State, action: Action) => {
       return {
         ...state,
         drawerOpen: action.value
+      };
+    case actionTypes.SET_DARK_MODE:
+      return {
+        ...state,
+        darkMode: action.value
       };
     default:
       return state;

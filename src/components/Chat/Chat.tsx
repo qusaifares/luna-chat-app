@@ -39,7 +39,7 @@ interface Props {
 const Chat: React.FC<Props> = ({ roomId }) => {
   let history = useHistory();
 
-  const [{ user, google_user }, dispatch] = useStateValue();
+  const [{ user, google_user, darkMode }, dispatch] = useStateValue();
   const [roomMemberNames, setRoomMemberNames] = useState<string[]>([]);
   const [inviteTooltip, setInviteTooltip] = useState('Copy Invite Link');
 
@@ -342,6 +342,7 @@ const Chat: React.FC<Props> = ({ roomId }) => {
           }}
           emojiTooltip={true}
           emojiSize={36}
+          theme={darkMode ? 'dark' : 'light'}
         />
       </div>
 

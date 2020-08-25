@@ -135,3 +135,7 @@
   margin-left: 20px;
   font-size: 1.2rem;
 }
+
+#sidebar__optionsMenu .MuiTypography-root {
+  margin-left: 10px;
+}

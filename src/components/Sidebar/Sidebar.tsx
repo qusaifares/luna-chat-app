@@ -13,7 +13,8 @@ import {
   Toolbar,
   Typography,
   ListItemIcon,
-  ListItemText
+  ListItemText,
+  Switch
 } from '@material-ui/core';
 import {
   DonutLarge,
@@ -21,7 +22,9 @@ import {
   MoreVert,
   SearchOutlined,
   ArrowBack,
-  FiberManualRecord
+  FiberManualRecord,
+  ExitToApp,
+  Brightness3
 } from '@material-ui/icons';
 
 import SidebarChat from '../SidebarChat/SidebarChat';
@@ -51,7 +54,7 @@ interface Props {}
 const Sidebar: React.FC<Props> = () => {
   let history = useHistory();
   const [
-    { user, google_user, drawerOpen, sideDrawer },
+    { user, google_user, drawerOpen, sideDrawer, darkMode },
     dispatch
   ] = useStateValue();
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -182,7 +185,22 @@ const Sidebar: React.FC<Props> = () => {
                 horizontal: 'right'
               }}
             >
-              <MenuItem onClick={signOut}>Sign Out</MenuItem>
+              <MenuItem
+                onClick={() =>
+                  dispatch({
+                    type: actionTypes.SET_DARK_MODE,
+                    value: !darkMode
+                  })
+                }
+              >
+                <Brightness3 />
+                <Typography>Dark Mode</Typography>
+                <Switch checked={darkMode} />
+              </MenuItem>
+              <MenuItem onClick={signOut}>
+                <ExitToApp />
+                <Typography>Sign Out</Typography>
+              </MenuItem>
             </Menu>
           </div>
         </div>

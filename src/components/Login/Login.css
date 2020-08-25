@@ -23,7 +23,7 @@
 .login__container > button {
   margin-top: 50px;
   text-transform: inherit !important;
-
+  color: #333 !important;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
 }
 

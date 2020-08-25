@@ -18,8 +18,7 @@ import SideNavItem from './components/SideNavItem/SideNavItem';
 
 const App = () => {
   let history = useHistory();
-  const [{ user, google_user }, dispatch] = useStateValue();
-  const [darkMode, setDarkMode] = useState<boolean>(false);
+  const [{ user, google_user, darkMode }, dispatch] = useStateValue();
   const theme = createMuiTheme({
     palette: {
       type: darkMode ? 'dark' : 'light'

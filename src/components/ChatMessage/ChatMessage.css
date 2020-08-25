@@ -8,9 +8,14 @@
   margin-bottom: 30px;
 }
 
+.app-dark .chatMessage {
+  background-color: var(--chatMsg-bg-dm);
+  color: white;
+}
+
 .chatMessage__userMessage {
   margin-left: auto;
-  background-color: var(--userMsg-bg);
+  background-color: var(--userMsg-bg) !important;
   color: white;
 }
 

@@ -4,9 +4,17 @@
   padding: 15px 30px;
 }
 
+.app-dark .editField {
+  background: var(--chatInput-bg-dm);
+}
+
 .editField__label {
   font-size: 15px;
   color: #a66cf7;
+}
+
+.app-dark .editField__label {
+  color: var(--sidebar-lastMsg);
 }
 
 .editField__lower {
@@ -27,6 +35,15 @@
   background-color: white;
 }
 
+.app-dark .editField__value {
+  background: var(--chatInput-bg-dm);
+  color: white;
+}
+
 .editField__lower > .MuiSvgIcon-root {
   color: #919191 !important;
+}
+
+.app-dark .editField__lower .MuiSvgIcon-root {
+  color: var(--sidebar-lastMsg) !important;
 }

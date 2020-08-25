@@ -8,6 +8,9 @@
   --badge-bg: #774aa6;
   --sidebar-icons: #6d5c86;
   --sidebar-lastMsg: #aa94cc;
+  --chat-bg-dm: #262331;
+  --chatMsg-bg-dm: #343146;
+  --chatInput-bg-dm: #1f1c26;
 }
 
 ::-webkit-scrollbar {

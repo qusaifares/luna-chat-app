@@ -8,11 +8,24 @@
   flex-direction: column;
 }
 
+.app-dark .chat {
+  background-color: var(--chat-bg-dm);
+  color: white;
+}
+
+.app-dark .chat .MuiSvgIcon-root {
+  color: var(--sidebar-lastMsg) !important;
+}
+
 .chat__header {
   padding: 10px;
   display: flex;
   align-items: center;
   border-bottom: 1px solid lightgrey;
+}
+
+.app-dark .chat__header {
+  border-bottom-color: var(--purple);
 }
 
 .chat__headerInfo {
@@ -59,6 +72,10 @@
   border-left: 1px solid lightgrey;
 }
 
+.app-dark .chat__footer {
+  border-color: var(--purple);
+}
+
 .chat__footer > form {
   flex: 1;
   display: flex;
@@ -71,6 +88,11 @@
   border: none;
   outline: none;
   font-size: 16px;
+}
+
+.app-dark .chat__footer > form > input {
+  background: var(--chatInput-bg-dm);
+  color: lightgrey;
 }
 
 .chat__footer > form > button {
