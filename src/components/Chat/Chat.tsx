@@ -54,6 +54,7 @@ const Chat: React.FC<Props> = ({ roomId }) => {
   const [drawerHeight, setDrawerHeight] = useState<number>(0);
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const chatBodyRef = useRef<HTMLDivElement>(null);
   const [optionsAnchor, setOptionsAnchor] = useState<null | HTMLElement>(null);
 
   useEffect(() => {
@@ -150,10 +151,10 @@ const Chat: React.FC<Props> = ({ roomId }) => {
 
   const bottomRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages, emojisOpen]);
+    chatBodyRef?.current?.scrollTo({
+      top: chatBodyRef.current.scrollHeight
+    });
+  }, [roomId, messages, emojisOpen]);
 
   const copyLink = (): void => {
     navigator.clipboard
@@ -290,6 +291,7 @@ const Chat: React.FC<Props> = ({ roomId }) => {
         </div>
       </div>
       <div
+        ref={chatBodyRef}
         id='chat__body'
         className={`chat__body ${emojisOpen && 'chat__body-emojisOpen'}`}
       >

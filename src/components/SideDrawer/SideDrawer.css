@@ -1,0 +1,14 @@
+.sideDrawer {
+  position: absolute;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-100%);
+  transition: 100ms transform ease-in;
+}
+
+.sideDrawer-open {
+  transform: translateX(0);
+}

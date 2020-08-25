@@ -1,0 +1,39 @@
+.sideNavItem .MuiSvgIcon-root {
+  color: var(--sidebar-lastMsg);
+}
+
+.sideNavItem {
+  display: grid;
+  place-items: center;
+  height: 80px;
+  width: 100%;
+  position: relative;
+  cursor: pointer;
+}
+
+.sideNavItem:hover {
+  background: var(--dark-purple);
+}
+
+.sideNavItem.sideNavItem-active {
+  background: var(--purple);
+}
+
+.sideNavItem-active .MuiSvgIcon-root {
+  color: white;
+}
+
+.sideNavItem-active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  height: 100%;
+  width: 8px;
+  background: rgb(119, 74, 166);
+  background: linear-gradient(
+    0deg,
+    rgba(119, 74, 166, 1) 29%,
+    rgba(144, 90, 200, 1) 53%,
+    rgba(194, 141, 249, 1) 91%
+  );
+}

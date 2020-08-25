@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Route, Switch, useHistory } from 'react-router-dom';
 
 import Home from './components/Home/Home';
+import SideNav from './components/SideNav/SideNav';
 import Sidebar from './components/Sidebar/Sidebar';
 import Chat from './components/Chat/Chat';
 import Login from './components/Login/Login';
@@ -12,6 +13,7 @@ import { useStateValue } from './store/StateProvider';
 import db, { auth } from './firebase';
 
 import './App.css';
+import SideNavItem from './components/SideNavItem/SideNavItem';
 
 const App = () => {
   let history = useHistory();
@@ -61,26 +63,29 @@ const App = () => {
   return (
     <div className='app'>
       {user ? (
-        <div className='app__body'>
-          <Sidebar />
-          <Switch>
-            <Route
-              path='/rooms/:id'
-              exact
-              render={(routerProps) => (
-                <Chat roomId={routerProps.match.params.id} />
-              )}
-            />
-            <Route
-              path='/invite/:id'
-              exact
-              render={(routerProps) => (
-                <Invite roomId={routerProps.match.params.id} />
-              )}
-            />
-            <Route path='/' exact component={Home} />
-          </Switch>
-        </div>
+        <>
+          <SideNav />
+          <div className='app__body'>
+            <Sidebar />
+            <Switch>
+              <Route
+                path='/rooms/:id'
+                exact
+                render={(routerProps) => (
+                  <Chat roomId={routerProps.match.params.id} />
+                )}
+              />
+              <Route
+                path='/invite/:id'
+                exact
+                render={(routerProps) => (
+                  <Invite roomId={routerProps.match.params.id} />
+                )}
+              />
+              <Route path='/' exact component={Home} />
+            </Switch>
+          </div>
+        </>
       ) : (
         <Login />
       )}

@@ -12,11 +12,12 @@ import firebase from 'firebase';
 
 import './Profile.css';
 import { unstable_renderSubtreeIntoContainer } from 'react-dom';
+import { DrawerType } from '../Sidebar/Sidebar';
 
 interface Props {}
 
 const Profile: React.FC<Props> = (props) => {
-  const [{ user }, dispatch] = useStateValue();
+  const [{ user, sideDrawer }, dispatch] = useStateValue();
   const [nameString, setNameString] = useState<string>('');
   useEffect(() => {
     setNameString(user?.name || '');
@@ -48,7 +49,11 @@ const Profile: React.FC<Props> = (props) => {
   };
 
   return (
-    <div className='profile'>
+    <div
+      className={`profile ${
+        sideDrawer === DrawerType.Profile && 'profile-open'
+      }`}
+    >
       <Avatar src={user?.photoURL} />
       <EditField
         label='Your Name'

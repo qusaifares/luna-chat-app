@@ -8,3 +8,42 @@
   height: 170px;
   margin: 30px auto;
 }
+
+.profile-open > .MuiAvatar-root {
+  animation: avatarScaleUp 0.75s cubic-bezier(0.1, 0.82, 0.25, 1);
+}
+
+.profile-open > .editField {
+  animation: editFieldFadeIn 1s cubic-bezier(0.1, 0.82, 0.25, 1);
+}
+
+@keyframes avatarScaleUp {
+  0%,
+  20% {
+    transform: scale(0);
+  }
+  to {
+    transform: scale 1, 1;
+  }
+}
+
+@keyframes editFieldFadeIn {
+  0%,
+  30% {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* @keyframes fadeIn {
+  0% {
+    transform: scale(0.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+} */

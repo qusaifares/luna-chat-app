@@ -17,22 +17,18 @@ import {
 } from '@material-ui/core';
 import {
   DonutLarge,
-  Chat,
+  GroupAdd,
   MoreVert,
   SearchOutlined,
   ArrowBack,
   FiberManualRecord
 } from '@material-ui/icons';
 
-import {
-  Theme,
-  makeStyles,
-  withStyles,
-  createStyles
-} from '@material-ui/core/styles';
 import SidebarChat from '../SidebarChat/SidebarChat';
 import Profile from '../Profile/Profile';
 import IconContainer from '../IconContainer/IconContainer';
+import SideNav from '../SideNav/SideNav';
+import SideDrawer from '../SideDrawer/SideDrawer';
 
 import { useStateValue } from '../../store/StateProvider';
 import { actionTypes } from '../../store/reducer';
@@ -41,57 +37,30 @@ import db, { auth } from '../../firebase';
 import firebase from 'firebase';
 
 import './Sidebar.css';
-enum DrawerType {
+export enum DrawerType {
   Profile = 'Profile'
 }
-enum Status {
-  Online = 'online',
-  Away = 'away',
-  Offline = 'offline'
-}
+
 interface Room {
   id: string;
   data: firebase.firestore.DocumentData;
 }
-interface Props {}
 
-const StyledBadge = withStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      height: 'fit-content',
-      width: 'fit-content'
-    },
-    badge: {
-      boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
-      '&::after': {
-        position: 'absolute',
-        top: -1,
-        left: -1,
-        width: '100%',
-        height: '100%',
-        borderRadius: '50%',
-        content: '""'
-      }
-    }
-  })
-)(Badge);
+interface Props {}
 
 const Sidebar: React.FC<Props> = () => {
   let history = useHistory();
-  const [{ user, google_user }, dispatch] = useStateValue();
+  const [
+    { user, google_user, drawerOpen, sideDrawer },
+    dispatch
+  ] = useStateValue();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [filteredRooms, setFilteredRooms] = useState<Room[]>([]);
   const [roomIds, setRoomIds] = useState<string[]>([]);
   const [optionsAnchor, setOptionsAnchor] = React.useState<null | HTMLElement>(
     null
   );
-  const [statusAnchor, setStatusAnchor] = React.useState<null | HTMLElement>(
-    null
-  );
   const [searchInput, setSearchInput] = useState<string>('');
-  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
-  const [drawerTitle, setDrawerTitle] = useState<string>('');
-  const [status, setStatus] = useState<Status>(Status.Online);
 
   useEffect(() => {
     setFilteredRooms(
@@ -151,22 +120,6 @@ const Sidebar: React.FC<Props> = () => {
     };
   }, [roomIds]);
 
-  const toggleDrawer = (drawerName: DrawerType): void => {
-    setOptionsAnchor(null);
-    if (!drawerName) {
-      setDrawerTitle('');
-      setDrawerOpen(false);
-    } else {
-      setDrawerTitle(drawerName);
-      setDrawerOpen(!drawerOpen);
-    }
-  };
-  const cleanupDrawer = (): void => {
-    if (!drawerOpen) {
-      setDrawerTitle('');
-    }
-  };
-
   const signOut = (): void => {
     auth.signOut().then(() => {
       dispatch({ type: actionTypes.SET_USER, value: null });
@@ -198,146 +151,77 @@ const Sidebar: React.FC<Props> = () => {
       });
   };
 
-  const changeStatus = (statusClicked: Status) => {
-    setStatusAnchor(null);
-    setStatus(statusClicked);
-  };
-
   return (
     <div className='sidebar' id='sidebar'>
-      <div className='sidebar__header'>
-        <StyledBadge
-          overlap='circle'
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'right'
-          }}
-          variant='dot'
-          className={`${status}Background ${
-            status === Status.Online && 'sidebar__avatarBadgeRipple'
-          }`}
-        >
-          <Avatar
-            onClick={(e) => setStatusAnchor(e.currentTarget)}
-            src={user?.photoURL}
-          />
-        </StyledBadge>
-        <Menu
-          id='sidebar__statusMenu'
-          open={!!statusAnchor}
-          anchorEl={statusAnchor}
-          getContentAnchorEl={null}
-          onClose={() => setStatusAnchor(null)}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center'
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'left'
-          }}
-        >
-          <MenuItem onClick={() => changeStatus(Status.Online)}>
-            <ListItemIcon>
-              <FiberManualRecord fontSize='small' className='onlineColor' />
-            </ListItemIcon>
-            <ListItemText>Online</ListItemText>
-          </MenuItem>
-          <MenuItem onClick={() => changeStatus(Status.Away)}>
-            <ListItemIcon>
-              <FiberManualRecord fontSize='small' className='awayColor' />
-            </ListItemIcon>
-            <ListItemText>Away</ListItemText>
-          </MenuItem>
-          <MenuItem onClick={() => changeStatus(Status.Offline)}>
-            <ListItemIcon>
-              <FiberManualRecord fontSize='small' className='offlineColor' />
-            </ListItemIcon>
-            <ListItemText>Invisible</ListItemText>
-          </MenuItem>
-        </Menu>
-        <div className='sidebar__headerRight'>
-          <IconContainer tooltip='Create Group Chat'>
-            <IconButton onClick={createChat}>
-              <Chat />
+      <div className='sidebar__body'>
+        <div className='sidebar__header'>
+          <div className='sidebar__headerRight'>
+            <IconContainer tooltip='Create Group Chat'>
+              <IconButton onClick={createChat}>
+                <GroupAdd />
+              </IconButton>
+            </IconContainer>
+            <IconButton
+              onClick={(e) => setOptionsAnchor(e.currentTarget)}
+              aria-controls='sidebar__optionsMenu'
+            >
+              <MoreVert />
             </IconButton>
-          </IconContainer>
-          <IconButton
-            onClick={(e) => setOptionsAnchor(e.currentTarget)}
-            aria-controls='sidebar__optionsMenu'
-          >
-            <MoreVert />
-          </IconButton>
-          <Menu
-            id='sidebar__optionsMenu'
-            open={!!optionsAnchor}
-            anchorEl={optionsAnchor}
-            getContentAnchorEl={null}
-            onClose={() => setOptionsAnchor(null)}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'center'
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right'
-            }}
-          >
-            <MenuItem onClick={() => toggleDrawer(DrawerType.Profile)}>
-              Profile
-            </MenuItem>
-            <MenuItem onClick={signOut}>Sign Out</MenuItem>
-          </Menu>
+            <Menu
+              id='sidebar__optionsMenu'
+              open={!!optionsAnchor}
+              anchorEl={optionsAnchor}
+              getContentAnchorEl={null}
+              onClose={() => setOptionsAnchor(null)}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center'
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right'
+              }}
+            >
+              <MenuItem onClick={signOut}>Sign Out</MenuItem>
+            </Menu>
+          </div>
         </div>
-      </div>
-      <div className='sidebar__search'>
-        <div className='sidebar__searchContainer'>
-          <SearchOutlined />
-          <input
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            type='text'
-            placeholder='Search or start new chat'
-          />
+        <div className='sidebar__search'>
+          <div className='sidebar__searchContainer'>
+            <SearchOutlined />
+            <input
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              type='text'
+              placeholder='Search conversations'
+            />
+          </div>
         </div>
+        <div className='sidebar__chats'>
+          {/* <SidebarChat addNewChat /> */}
+          <FlipMove>
+            {filteredRooms.map((room) => (
+              <SidebarChat key={room.id} room={room.data} id={room.id} />
+            ))}
+          </FlipMove>
+        </div>
+        <SideDrawer open={drawerOpen}>
+          <Toolbar className='sidebar__drawerHeader'>
+            <IconButton
+              onClick={() =>
+                dispatch({ type: actionTypes.SET_DRAWER_OPEN, value: false })
+              }
+              edge='start'
+              color='inherit'
+              aria-label='back'
+            >
+              <ArrowBack />
+            </IconButton>
+            <Typography variant='h6'>{sideDrawer}</Typography>
+          </Toolbar>
+          {sideDrawer === DrawerType.Profile && <Profile />}
+        </SideDrawer>
       </div>
-      <div className='sidebar__chats'>
-        {/* <SidebarChat addNewChat /> */}
-        <FlipMove>
-          {filteredRooms.map((room) => (
-            <SidebarChat key={room.id} room={room.data} id={room.id} />
-          ))}
-        </FlipMove>
-      </div>
-      <Drawer
-        anchor='left'
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        PaperProps={{ style: { position: 'absolute', width: '100%' } }}
-        BackdropProps={{ invisible: true, style: { position: 'absolute' } }}
-        ModalProps={{
-          container: document.getElementById('sidebar'),
-          style: { position: 'absolute' }
-        }}
-        onTransitionEnd={cleanupDrawer}
-      >
-        <Toolbar
-          className={`sidebar__drawerHeader ${
-            drawerOpen && 'sidebar__drawerHeader-open'
-          }`}
-        >
-          <IconButton
-            onClick={() => setDrawerOpen(false)}
-            edge='start'
-            color='inherit'
-            aria-label='back'
-          >
-            <ArrowBack />
-          </IconButton>
-          <Typography variant='h6'>{drawerTitle}</Typography>
-        </Toolbar>
-        {drawerTitle === DrawerType.Profile && <Profile />}
-      </Drawer>
     </div>
   );
 };

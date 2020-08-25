@@ -1,9 +1,7 @@
 .sidebar {
   flex: 0.35;
   display: flex;
-  min-width: 260px;
-  flex-direction: column;
-  position: relative;
+  min-width: 305px;
   overflow-x: hidden;
 }
 
@@ -36,7 +34,7 @@
   border: none;
   margin-left: 10px;
   outline: none;
-  min-width: 70%;
+  flex: 1;
   background-color: var(--dark-purple);
   color: white;
   font-size: 1rem;
@@ -44,13 +42,13 @@
 
 .sidebar__header {
   display: flex;
-  justify-content: space-between;
-  padding: 20px;
+  justify-content: flex-end;
+  padding: 10px;
   background: var(--dark-purple);
 }
 
 .sidebar__header .MuiSvgIcon-root {
-  color: var(--sidebar-icons);
+  color: var(--sidebar-lastMsg);
 }
 
 .sidebar__header .MuiAvatar-root {
@@ -109,14 +107,17 @@
   font-size: 24px !important;
 }
 
+.sidebar__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
 .sidebar__chats {
   background: var(--purple);
   flex: 1;
   overflow-y: scroll;
-}
-
-.sidebar > .MuiDrawer-paper {
-  position: absolute !important;
 }
 
 .sidebar__drawerHeader {
