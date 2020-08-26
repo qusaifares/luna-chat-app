@@ -9,7 +9,7 @@ const Home: React.FC<Props> = (props) => {
   return (
     <div className='home'>
       <div className='home__container'>
-        <Chat />
+        <img src={`${process.env.PUBLIC_URL}/images/chat_logo.png`} alt='' />
         <h2>Click a chat to begin</h2>
       </div>
     </div>

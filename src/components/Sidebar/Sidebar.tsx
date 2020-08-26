@@ -24,13 +24,14 @@ import {
   ArrowBack,
   FiberManualRecord,
   ExitToApp,
-  Brightness3
+  Brightness3,
+  Create
 } from '@material-ui/icons';
 
 import SidebarChat from '../SidebarChat/SidebarChat';
 import Profile from '../Profile/Profile';
 import IconContainer from '../IconContainer/IconContainer';
-import SideNav from '../SideNav/SideNav';
+import CreateGroup from '../CreateGroup/CreateGroup';
 import SideDrawer from '../SideDrawer/SideDrawer';
 
 import { useStateValue } from '../../store/StateProvider';
@@ -164,6 +165,7 @@ const Sidebar: React.FC<Props> = () => {
                 <GroupAdd />
               </IconButton>
             </IconContainer>
+            <CreateGroup />
             <IconButton
               onClick={(e) => setOptionsAnchor(e.currentTarget)}
               aria-controls='sidebar__optionsMenu'

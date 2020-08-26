@@ -2,8 +2,8 @@
   flex: 0.65;
   display: grid;
   place-items: center;
-  color: white;
-  background-color: rgb(48, 48, 48);
+  background-color: white;
+  color: rgb(48, 48, 48);
 }
 
 .home__container {
@@ -13,8 +13,8 @@
   justify-content: center;
 }
 
-.home__container > .MuiSvgIcon-root {
-  height: 200px !important;
-  width: 200px !important;
-  margin-bottom: 40px !important;
+.home__container > img {
+  height: 200px;
+  width: 200px;
+  margin-bottom: 40px;
 }

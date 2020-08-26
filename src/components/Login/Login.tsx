@@ -61,13 +61,11 @@ const Login: React.FC<Props> = (props) => {
     <div className='login'>
       <div className='login__container'>
         <img
-          src={
-            'https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg'
-          }
-          alt='WhatsApp Logo'
+          src={`${process.env.PUBLIC_URL}/images/chat_logo.png`}
+          alt='ChatApp Logo'
         />
         <div className='login__text'>
-          <h1>Sign in to WhatsApp</h1>
+          <h1>Sign in to Luna</h1>
         </div>
         <Button
           onClick={signIn}

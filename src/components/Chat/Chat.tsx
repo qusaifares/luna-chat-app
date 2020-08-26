@@ -263,11 +263,11 @@ const Chat: React.FC<Props> = ({ roomId }) => {
               <FilterNone />
             </IconButton>
           </IconContainer>
-          <IconContainer tooltip='Attach File'>
+          {/* <IconContainer tooltip='Attach File'>
             <IconButton>
               <AttachFile />
             </IconButton>
-          </IconContainer>
+          </IconContainer> */}
           <IconButton onClick={(e) => setOptionsAnchor(e.currentTarget)}>
             <MoreVert />
           </IconButton>
@@ -360,9 +360,9 @@ const Chat: React.FC<Props> = ({ roomId }) => {
           />
           <button type='submit'>Send a message</button>
         </form>
-        <IconButton onClick={recordAudio}>
+        {/* <IconButton onClick={recordAudio}>
           <Mic />
-        </IconButton>
+        </IconButton> */}
       </div>
     </div>
   );
