@@ -1,6 +1,6 @@
-# WhatsApp Clone
+# Luna
 
-WhatsApp clone built with React, TypeScript. Uses firebase firestore server for realtime updates.
+Luna messenger app built with React, TypeScript. Uses firebase firestore server for realtime updates.
 
 ## Technologies Used
 
