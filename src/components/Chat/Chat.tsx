@@ -1,6 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Avatar, IconButton, Menu, MenuItem } from '@material-ui/core';
+import {
+  Avatar,
+  IconButton,
+  Menu,
+  MenuItem,
+  Snackbar,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button
+} from '@material-ui/core';
 import {
   FilterNone,
   SearchOutlined,
@@ -32,6 +43,12 @@ interface Message {
   timestamp: firebase.firestore.FieldValue;
 }
 
+interface SnackbarProps {
+  open: boolean;
+  vertical: 'top' | 'bottom';
+  horizontal: 'left' | 'center' | 'right';
+}
+
 interface Props {
   roomId: string;
 }
@@ -56,6 +73,12 @@ const Chat: React.FC<Props> = ({ roomId }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const chatBodyRef = useRef<HTMLDivElement>(null);
   const [optionsAnchor, setOptionsAnchor] = useState<null | HTMLElement>(null);
+  const [copyLinkMsg, setCopyLinkMsg] = useState<SnackbarProps>({
+    open: false,
+    vertical: 'top',
+    horizontal: 'center'
+  });
+  const [leaveDialog, setLeaveDialog] = useState<boolean>(false);
 
   useEffect(() => {
     setInput('');
@@ -160,10 +183,7 @@ const Chat: React.FC<Props> = ({ roomId }) => {
     navigator.clipboard
       .writeText(`${window.location.origin}/invite/${roomId}`)
       .then(() => {
-        setInviteTooltip('Invite Link Copied!');
-        setTimeout(() => {
-          setInviteTooltip('Copy Invite Link');
-        }, 4000);
+        setCopyLinkMsg({ ...copyLinkMsg, open: true });
       })
       .catch((err) => console.log(err));
   };
@@ -179,6 +199,7 @@ const Chat: React.FC<Props> = ({ roomId }) => {
   const recordAudio = (): void => {};
 
   const leaveGroup = (): void => {
+    setLeaveDialog(false);
     const userRef = db.collection('users').doc(user.google_uid);
     const roomRef = db.collection('rooms').doc(roomId);
 
@@ -263,6 +284,16 @@ const Chat: React.FC<Props> = ({ roomId }) => {
               <FilterNone />
             </IconButton>
           </IconContainer>
+          <Snackbar
+            anchorOrigin={{
+              vertical: copyLinkMsg.vertical,
+              horizontal: copyLinkMsg.horizontal
+            }}
+            open={copyLinkMsg.open}
+            onClose={() => setCopyLinkMsg({ ...copyLinkMsg, open: false })}
+            message='Invite Link Copied'
+            key={copyLinkMsg.vertical + copyLinkMsg.horizontal}
+          />
           {/* <IconContainer tooltip='Attach File'>
             <IconButton>
               <AttachFile />
@@ -286,8 +317,25 @@ const Chat: React.FC<Props> = ({ roomId }) => {
               horizontal: 'left'
             }}
           >
-            <MenuItem onClick={leaveGroup}>Leave Group</MenuItem>
+            <MenuItem
+              onClick={() => {
+                setOptionsAnchor(null);
+                setLeaveDialog(true);
+              }}
+            >
+              Leave Group
+            </MenuItem>
           </Menu>
+          <Dialog open={leaveDialog} onClose={() => setLeaveDialog(false)}>
+            <DialogTitle>Leave Group</DialogTitle>
+            <DialogContent>
+              Are you sure you want to leave {roomName}?
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setLeaveDialog(false)}>No</Button>
+              <Button onClick={leaveGroup}>Yes</Button>
+            </DialogActions>
+          </Dialog>
         </div>
       </div>
       <div

@@ -14,7 +14,13 @@ import {
   Typography,
   ListItemIcon,
   ListItemText,
-  Switch
+  Switch,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button
 } from '@material-ui/core';
 import {
   DonutLarge,
@@ -31,8 +37,9 @@ import {
 import SidebarChat from '../SidebarChat/SidebarChat';
 import Profile from '../Profile/Profile';
 import IconContainer from '../IconContainer/IconContainer';
-import CreateGroup from '../CreateGroup/CreateGroup';
 import SideDrawer from '../SideDrawer/SideDrawer';
+
+import CreateGroup from '../CreateGroup/CreateGroup';
 
 import { useStateValue } from '../../store/StateProvider';
 import { actionTypes } from '../../store/reducer';
@@ -41,6 +48,7 @@ import db, { auth } from '../../firebase';
 import firebase from 'firebase';
 
 import './Sidebar.css';
+import { stringify } from 'querystring';
 export enum DrawerType {
   Profile = 'Profile'
 }
@@ -65,6 +73,14 @@ const Sidebar: React.FC<Props> = () => {
     null
   );
   const [searchInput, setSearchInput] = useState<string>('');
+  const [signOutDialog, setSignOutDialog] = useState<boolean>(false);
+  const [createGroupDialog, setCreateGroupDialog] = useState<boolean>(false);
+  const [groupNameInput, setGroupNameInput] = useState<string>('');
+
+  const changeGroupNameInput = (value: string) => {
+    if (value.length > 20) return;
+    setGroupNameInput(value);
+  };
 
   useEffect(() => {
     setFilteredRooms(
@@ -76,11 +92,11 @@ const Sidebar: React.FC<Props> = () => {
 
   useEffect(() => {
     // Returns unsubscribe value
-    if (!google_user.uid) return;
+    if (!user.google_uid) return;
 
     const unsubscribe = db
       .collection('users')
-      .doc(google_user.uid)
+      .doc(user.google_uid)
       .onSnapshot((snapshot) => {
         // returns ids of rooms
         const res = snapshot
@@ -99,7 +115,7 @@ const Sidebar: React.FC<Props> = () => {
     return () => {
       unsubscribe();
     };
-  }, [google_user.uid]);
+  }, [user]);
 
   useEffect(() => {
     if (!roomIds.length) return;
@@ -125,6 +141,7 @@ const Sidebar: React.FC<Props> = () => {
   }, [roomIds]);
 
   const signOut = (): void => {
+    setSignOutDialog(false);
     auth.signOut().then(() => {
       dispatch({ type: actionTypes.SET_USER, value: null });
       dispatch({ type: actionTypes.SET_GOOGLE_USER, value: null });
@@ -132,16 +149,15 @@ const Sidebar: React.FC<Props> = () => {
     });
   };
 
-  const createChat = (): void => {
+  const createGroup = (): void => {
     if (!user) return;
-    const roomName = prompt('Please enter a name for the chat.')?.trim();
-    if (!roomName) return;
+    if (!groupNameInput) return;
 
     const userRef = db.collection('users').doc(user.google_uid);
 
     db.collection('rooms')
       .add({
-        name: roomName,
+        name: groupNameInput.trim(),
         members: [userRef],
         lastMessageTimestamp: firebase.firestore.FieldValue.serverTimestamp()
       })
@@ -150,8 +166,14 @@ const Sidebar: React.FC<Props> = () => {
           .update({
             rooms: firebase.firestore.FieldValue.arrayUnion(roomRef)
           })
-          .then(() => history.push(`/rooms/${roomRef.id}`))
-          .catch((err) => console.log(err));
+          .then(() => {
+            setCreateGroupDialog(false);
+            history.push(`/rooms/${roomRef.id}`);
+          })
+          .catch((err) => {
+            setCreateGroupDialog(false);
+            console.log(err);
+          });
       });
   };
 
@@ -161,11 +183,10 @@ const Sidebar: React.FC<Props> = () => {
         <div className='sidebar__header'>
           <div className='sidebar__headerRight'>
             <IconContainer tooltip='Create Group Chat'>
-              <IconButton onClick={createChat}>
+              <IconButton onClick={() => setCreateGroupDialog(true)}>
                 <GroupAdd />
               </IconButton>
             </IconContainer>
-            <CreateGroup />
             <IconButton
               onClick={(e) => setOptionsAnchor(e.currentTarget)}
               aria-controls='sidebar__optionsMenu'
@@ -199,11 +220,46 @@ const Sidebar: React.FC<Props> = () => {
                 <Typography>Dark Mode</Typography>
                 <Switch checked={darkMode} />
               </MenuItem>
-              <MenuItem onClick={signOut}>
+              <MenuItem onClick={() => setSignOutDialog(true)}>
                 <ExitToApp />
                 <Typography>Sign Out</Typography>
               </MenuItem>
             </Menu>
+            {/* Create group dialog box */}
+            <Dialog
+              open={createGroupDialog}
+              onClose={() => setCreateGroupDialog(false)}
+              fullWidth
+              maxWidth='xs'
+            >
+              <DialogTitle>Create Group Chat</DialogTitle>
+              <DialogContent>
+                <TextField
+                  value={groupNameInput}
+                  onChange={(e) => changeGroupNameInput(e.target.value)}
+                  placeholder='Group Name'
+                  fullWidth
+                  required
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => setCreateGroupDialog(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={createGroup}>Create</Button>
+              </DialogActions>
+            </Dialog>
+            {/* Sign out dialog box */}
+            <Dialog
+              open={signOutDialog}
+              onClose={() => setSignOutDialog(false)}
+            >
+              <DialogContent>Are you sure you want to sign out?</DialogContent>
+              <DialogActions>
+                <Button onClick={() => setSignOutDialog(false)}>No</Button>
+                <Button onClick={signOut}>Yes</Button>
+              </DialogActions>
+            </Dialog>
           </div>
         </div>
         <div className='sidebar__search'>
