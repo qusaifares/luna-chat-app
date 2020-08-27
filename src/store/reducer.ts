@@ -33,7 +33,7 @@ interface Action {
 }
 
 const reducer = (state: State, action: Action) => {
-  console.log(action);
+  // console.log(action);
   switch (action.type) {
     case actionTypes.SET_USER:
       return {

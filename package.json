@@ -1,5 +1,6 @@
 {
-  "name": "whatsapp",
+  "name": "luna-chat-app",
+  "author": "Qusai Fares",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

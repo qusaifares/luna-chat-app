@@ -23,15 +23,11 @@ const Profile: React.FC<Props> = (props) => {
     setNameString(user?.name || '');
   }, [user]);
 
-  useEffect(() => {
-    console.log(nameString);
-  }, [nameString]);
-
   const submitName = (): void => {
     const userRef = db.collection('users').doc(user.google_uid);
     userRef.get().then((doc) => {
       let data = doc.data();
-      console.log(data);
+
       if (!data) return;
       // if name is same as string
       if (nameString === data.name) return;
