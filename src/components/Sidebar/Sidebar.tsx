@@ -63,10 +63,9 @@ interface Props {}
 const Sidebar: React.FC<Props> = () => {
   let history = useHistory();
   const [
-    { user, google_user, drawerOpen, sideDrawer, darkMode },
+    { user, google_user, drawerOpen, sideDrawer, darkMode, rooms },
     dispatch
   ] = useStateValue();
-  const [rooms, setRooms] = useState<Room[]>([]);
   const [filteredRooms, setFilteredRooms] = useState<Room[]>([]);
   const [roomIds, setRoomIds] = useState<string[]>([]);
   const [optionsAnchor, setOptionsAnchor] = React.useState<null | HTMLElement>(
@@ -84,7 +83,7 @@ const Sidebar: React.FC<Props> = () => {
 
   useEffect(() => {
     setFilteredRooms(
-      rooms.filter((room) =>
+      rooms.filter((room: firebase.firestore.DocumentData) =>
         room.data.name.toLowerCase().includes(searchInput.toLowerCase())
       )
     );
@@ -129,11 +128,12 @@ const Sidebar: React.FC<Props> = () => {
           data: doc.data()
         }));
 
-        setRooms(
-          tempRooms.sort(
+        dispatch({
+          type: actionTypes.SET_ROOMS,
+          value: tempRooms.sort(
             (a, b) => b.data.lastMessageTimestamp - a.data.lastMessageTimestamp
           )
-        );
+        });
       });
     return () => {
       unsubscribe();

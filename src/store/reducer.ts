@@ -6,6 +6,7 @@ interface State {
   sideDrawer: DrawerType | null;
   drawerOpen: boolean;
   darkMode: boolean;
+  rooms: firebase.firestore.DocumentData[];
 }
 
 export const initialState: State = {
@@ -13,7 +14,8 @@ export const initialState: State = {
   google_user: null,
   sideDrawer: null,
   drawerOpen: false,
-  darkMode: false
+  darkMode: false,
+  rooms: []
 };
 
 export const actionTypes = {
@@ -21,7 +23,8 @@ export const actionTypes = {
   SET_GOOGLE_USER: 'SET_GOOGLE_USER',
   SET_SIDE_DRAWER: 'SET_SIDE_DRAWER',
   SET_DRAWER_OPEN: 'SET_DRAWER_OPEN',
-  SET_DARK_MODE: 'SET_DARK_MODE'
+  SET_DARK_MODE: 'SET_DARK_MODE',
+  SET_ROOMS: 'SET_ROOMS'
 };
 
 interface Action {
@@ -56,6 +59,11 @@ const reducer = (state: State, action: Action) => {
       return {
         ...state,
         darkMode: action.value
+      };
+    case actionTypes.SET_ROOMS:
+      return {
+        ...state,
+        rooms: action.value
       };
     default:
       return state;

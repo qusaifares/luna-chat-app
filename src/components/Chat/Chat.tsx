@@ -35,6 +35,7 @@ import firebase from 'firebase';
 import db from '../../firebase';
 
 import './Chat.css';
+import { actionTypes } from '../../store/reducer';
 
 interface Message {
   content: string;
@@ -217,6 +218,12 @@ const Chat: React.FC<Props> = ({ roomId }) => {
           );
         userRef
           .update({ rooms: newUserRooms })
+          .then(() => {
+            userRef.get().then((newUserDoc) => {
+              dispatch({ type: actionTypes.SET_USER, value: newUserDoc });
+              dispatch({ type: actionTypes.SET_ROOMS, value: newUserRooms });
+            });
+          })
           .catch((err) => console.log(err));
       })
       .catch((err) => console.log(err));
