@@ -1,19 +1,13 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import FlipMove from 'react-flip-move';
 
 import {
-  Avatar,
-  Badge,
   IconButton,
   Menu,
   MenuItem,
-  Drawer,
-  AppBar,
   Toolbar,
   Typography,
-  ListItemIcon,
-  ListItemText,
   Switch,
   Dialog,
   DialogTitle,
@@ -23,15 +17,12 @@ import {
   Button
 } from '@material-ui/core';
 import {
-  DonutLarge,
   GroupAdd,
   MoreVert,
   SearchOutlined,
   ArrowBack,
-  FiberManualRecord,
   ExitToApp,
-  Brightness3,
-  Create
+  Brightness3
 } from '@material-ui/icons';
 
 import SidebarChat from '../SidebarChat/SidebarChat';
@@ -39,16 +30,14 @@ import Profile from '../Profile/Profile';
 import IconContainer from '../IconContainer/IconContainer';
 import SideDrawer from '../SideDrawer/SideDrawer';
 
-import CreateGroup from '../CreateGroup/CreateGroup';
-
 import { useStateValue } from '../../store/StateProvider';
-import { actionTypes } from '../../store/reducer';
+import { ActionType } from '../../store/reducer';
 
 import db, { auth } from '../../firebase';
 import firebase from 'firebase';
 
 import './Sidebar.css';
-import { stringify } from 'querystring';
+
 export enum DrawerType {
   Profile = 'Profile'
 }
@@ -63,7 +52,7 @@ interface Props {}
 const Sidebar: React.FC<Props> = () => {
   let history = useHistory();
   const [
-    { user, google_user, drawerOpen, sideDrawer, darkMode, rooms },
+    { user, drawerOpen, sideDrawer, darkMode, rooms },
     dispatch
   ] = useStateValue();
   const [filteredRooms, setFilteredRooms] = useState<Room[]>([]);
@@ -129,7 +118,7 @@ const Sidebar: React.FC<Props> = () => {
         }));
 
         dispatch({
-          type: actionTypes.SET_ROOMS,
+          type: ActionType.SET_ROOMS,
           value: tempRooms.sort(
             (a, b) => b.data.lastMessageTimestamp - a.data.lastMessageTimestamp
           )
@@ -143,8 +132,8 @@ const Sidebar: React.FC<Props> = () => {
   const signOut = (): void => {
     setSignOutDialog(false);
     auth.signOut().then(() => {
-      dispatch({ type: actionTypes.SET_USER, value: null });
-      dispatch({ type: actionTypes.SET_GOOGLE_USER, value: null });
+      dispatch({ type: ActionType.SET_USER, value: null });
+      dispatch({ type: ActionType.SET_GOOGLE_USER, value: null });
       history.push('/');
     });
   };
@@ -211,7 +200,7 @@ const Sidebar: React.FC<Props> = () => {
               <MenuItem
                 onClick={() =>
                   dispatch({
-                    type: actionTypes.SET_DARK_MODE,
+                    type: ActionType.SET_DARK_MODE,
                     value: !darkMode
                   })
                 }
@@ -285,7 +274,7 @@ const Sidebar: React.FC<Props> = () => {
           <Toolbar className='sidebar__drawerHeader'>
             <IconButton
               onClick={() =>
-                dispatch({ type: actionTypes.SET_DRAWER_OPEN, value: false })
+                dispatch({ type: ActionType.SET_DRAWER_OPEN, value: false })
               }
               edge='start'
               color='inherit'

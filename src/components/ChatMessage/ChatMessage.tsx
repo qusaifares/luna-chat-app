@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 import SystemMessage from '../SystemMessage/SystemMessage';
 
@@ -15,16 +15,6 @@ const ChatMessage: React.FC<Props> = ({
   userMessage,
   messageType
 }) => {
-  const [isToday, setIsToday] = useState<boolean>(false);
-  useEffect(() => {
-    const today = new Date().toLocaleDateString();
-    if (today === message.timestamp?.toDate().toLocaleDateString()) {
-      setIsToday(true);
-    } else {
-      setIsToday(false);
-    }
-  }, [message.timestamp]);
-
   if (messageType === 'join') {
     return <SystemMessage messageType={messageType} message={message} />;
   }

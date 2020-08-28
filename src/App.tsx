@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Route, Switch, useHistory } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Route, Switch } from 'react-router-dom';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 
 import Home from './components/Home/Home';
@@ -9,15 +9,13 @@ import Chat from './components/Chat/Chat';
 import Login from './components/Login/Login';
 import Invite from './components/Invite/Invite';
 
-import { actionTypes } from './store/reducer';
+import { ActionType } from './store/reducer';
 import { useStateValue } from './store/StateProvider';
 import db, { auth } from './firebase';
 
 import './App.css';
-import SideNavItem from './components/SideNavItem/SideNavItem';
 
 const App = () => {
-  let history = useHistory();
   const [{ user, google_user, darkMode }, dispatch] = useStateValue();
   const theme = createMuiTheme({
     palette: {
@@ -28,7 +26,7 @@ const App = () => {
   useEffect(() => {
     auth.onAuthStateChanged((authUser) => {
       dispatch({
-        type: actionTypes.SET_GOOGLE_USER,
+        type: ActionType.SET_GOOGLE_USER,
         value: authUser
       });
     });
@@ -40,7 +38,7 @@ const App = () => {
     userRef.get().then((doc) => {
       if (doc.exists) {
         dispatch({
-          type: actionTypes.SET_USER,
+          type: ActionType.SET_USER,
           value: doc.data()
         });
       } else {

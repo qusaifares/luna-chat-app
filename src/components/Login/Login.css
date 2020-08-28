@@ -20,13 +20,22 @@
   margin-bottom: 40px;
 }
 
-.login__container > button {
+.login__actions {
   margin-top: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login__actions > button {
+  margin-top: 15px;
+  width: 187px;
+  height: 36px;
   text-transform: inherit !important;
   color: #333 !important;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
 }
 
-.login__container > button svg {
+.login__actions > button svg {
   margin: 0 7px;
 }

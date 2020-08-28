@@ -1,0 +1,29 @@
+.invite {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+}
+
+.invite__label {
+  margin-top: 30px;
+  font-size: 22px;
+}
+
+.invite > .MuiSvgIcon-root {
+  color: var(--badge-bg);
+}
+
+.app-dark .invite {
+  background: var(--sidenav);
+}
+
+.app-dark .invite__label {
+  color: white;
+}
+
+.app-dark .invite > .MuiCircularProgress-root,
+.app-dark .invite > .MuiSvgIcon-root {
+  color: var(--sidebar-lastMsg);
+}

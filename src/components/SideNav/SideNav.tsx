@@ -4,31 +4,18 @@ import {
   Badge,
   Menu,
   MenuItem,
-  List,
-  ListItem,
   ListItemIcon,
   ListItemText
 } from '@material-ui/core';
-import {
-  Chat,
-  Person,
-  Contacts,
-  Settings,
-  FiberManualRecord
-} from '@material-ui/icons';
-import {
-  Theme,
-  makeStyles,
-  withStyles,
-  createStyles
-} from '@material-ui/core/styles';
+import { Chat, Person, FiberManualRecord } from '@material-ui/icons';
+import { Theme, withStyles, createStyles } from '@material-ui/core/styles';
 
 import SideNavItem from '../SideNavItem/SideNavItem';
 
 import { DrawerType } from '../Sidebar/Sidebar';
 
 import { useStateValue } from '../../store/StateProvider';
-import { actionTypes } from '../../store/reducer';
+import { ActionType } from '../../store/reducer';
 
 import './SideNav.css';
 
@@ -75,14 +62,14 @@ const SideNav: React.FC<Props> = () => {
 
   const toggleDrawer = (drawerName: DrawerType | null): void => {
     if (drawerName) {
-      dispatch({ type: actionTypes.SET_SIDE_DRAWER, value: drawerName });
+      dispatch({ type: ActionType.SET_SIDE_DRAWER, value: drawerName });
     }
-    dispatch({ type: actionTypes.SET_DRAWER_OPEN, value: !!drawerName });
+    dispatch({ type: ActionType.SET_DRAWER_OPEN, value: !!drawerName });
   };
   useEffect(() => {
     setTimeout(() => {
       if (!drawerOpen)
-        dispatch({ type: actionTypes.SET_SIDE_DRAWER, value: null });
+        dispatch({ type: ActionType.SET_SIDE_DRAWER, value: null });
     }, 100);
   }, [drawerOpen]);
   return (

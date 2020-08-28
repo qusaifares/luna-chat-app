@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
+import { CircularProgress } from '@material-ui/core';
+import ErrorIcon from '@material-ui/icons/Error';
+
+import './Invite.css';
+
 import firebase from 'firebase';
 import db from '../../firebase';
 
-import { actionTypes } from '../../store/reducer';
 import { useStateValue } from '../../store/StateProvider';
 
 interface Props {
@@ -15,8 +19,6 @@ const Invite: React.FC<Props> = ({ roomId }) => {
   let history = useHistory();
   const [{ user }, dispatch] = useStateValue();
   const [valid, setValid] = useState<boolean>(true);
-
-  const checkIfUserIsMember = (members: string[]): void => {};
 
   useEffect(() => {
     if (!user) return;
@@ -85,7 +87,21 @@ const Invite: React.FC<Props> = ({ roomId }) => {
       }
     });
   }, [user]);
-  return <div className='invite'>Joining room</div>;
+  return (
+    <div className='invite'>
+      {valid ? (
+        <>
+          <CircularProgress />
+          <div className='invite__label'>Joining room</div>
+        </>
+      ) : (
+        <>
+          <ErrorIcon fontSize='large' />
+          <div className='invite__label'>Invalid Invite Link</div>
+        </>
+      )}
+    </div>
+  );
 };
 
 export default Invite;

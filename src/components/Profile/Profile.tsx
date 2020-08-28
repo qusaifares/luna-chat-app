@@ -5,18 +5,17 @@ import EditField from '../EditField/EditField';
 import { Avatar } from '@material-ui/core';
 
 import { useStateValue } from '../../store/StateProvider';
-import { actionTypes } from '../../store/reducer';
+import { ActionType } from '../../store/reducer';
 
-import db from '../../firebase';
-import firebase from 'firebase';
+import db, { auth } from '../../firebase';
 
 import './Profile.css';
-import { unstable_renderSubtreeIntoContainer } from 'react-dom';
+
 import { DrawerType } from '../Sidebar/Sidebar';
 
 interface Props {}
 
-const Profile: React.FC<Props> = (props) => {
+const Profile: React.FC<Props> = () => {
   const [{ user, sideDrawer }, dispatch] = useStateValue();
   const [nameString, setNameString] = useState<string>('');
   useEffect(() => {
@@ -36,10 +35,16 @@ const Profile: React.FC<Props> = (props) => {
       if (!nameString || nameString.length > 25)
         return setNameString(data.name);
 
+      auth.currentUser?.updateProfile({ displayName: nameString }).then(() => {
+        dispatch({
+          type: ActionType.SET_GOOGLE_USER,
+          value: auth.currentUser
+        });
+      });
       userRef.update({ name: nameString }).then(() => {
         if (!data) return;
         data.name = nameString;
-        dispatch({ type: actionTypes.SET_USER, value: data });
+        dispatch({ type: ActionType.SET_USER, value: data });
       });
     });
   };

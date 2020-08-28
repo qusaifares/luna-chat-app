@@ -35,7 +35,7 @@ import firebase from 'firebase';
 import db from '../../firebase';
 
 import './Chat.css';
-import { actionTypes } from '../../store/reducer';
+import { ActionType } from '../../store/reducer';
 
 interface Message {
   content: string;
@@ -59,7 +59,6 @@ const Chat: React.FC<Props> = ({ roomId }) => {
 
   const [{ user, google_user, darkMode }, dispatch] = useStateValue();
   const [roomMemberNames, setRoomMemberNames] = useState<string[]>([]);
-  const [inviteTooltip, setInviteTooltip] = useState('Copy Invite Link');
 
   const [roomName, setRoomName] = useState<
     string | firebase.firestore.DocumentData
@@ -139,15 +138,13 @@ const Chat: React.FC<Props> = ({ roomId }) => {
   useEffect(() => {
     if (!roomId) return;
 
-    const roomRef = db
-      .collection('rooms')
-      .doc(roomId)
-      .get()
-      .then((roomDoc) => {
-        if (!roomDoc.exists) {
-          history.push('/');
-        }
-      });
+    const roomRef = db.collection('rooms').doc(roomId);
+
+    roomRef.get().then((roomDoc) => {
+      if (!roomDoc.exists) {
+        history.push('/');
+      }
+    });
 
     const unsubscribe1 = db
       .collection('rooms')
@@ -220,8 +217,8 @@ const Chat: React.FC<Props> = ({ roomId }) => {
           .update({ rooms: newUserRooms })
           .then(() => {
             userRef.get().then((newUserDoc) => {
-              dispatch({ type: actionTypes.SET_USER, value: newUserDoc });
-              dispatch({ type: actionTypes.SET_ROOMS, value: newUserRooms });
+              dispatch({ type: ActionType.SET_USER, value: newUserDoc });
+              dispatch({ type: ActionType.SET_ROOMS, value: newUserRooms });
             });
           })
           .catch((err) => console.log(err));
@@ -286,7 +283,7 @@ const Chat: React.FC<Props> = ({ roomId }) => {
               <SearchOutlined />
             </IconButton>
           </IconContainer>
-          <IconContainer tooltip={inviteTooltip}>
+          <IconContainer tooltip='Copy Invite Link'>
             <IconButton onClick={copyLink}>
               <FilterNone />
             </IconButton>
